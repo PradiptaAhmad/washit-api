@@ -11,4 +11,15 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'users'], function () {
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
+    Route::get('/me', [UserController::class, 'details'])->middleware('auth:sanctum');
+    Route::post('/update-profile-picture', [UserController::class, 'updateProfilePicture'])->middleware('auth:sanctum');
+    Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
+
+    Route::group(['prefix' => 'update', 'middleware' => 'auth:sanctum'], function() {
+        Route::post('/username', [UserController::class, 'updateUsername']);
+        Route::post('/email', [UserController::class, 'updateEmail']);
+        Route::post('/phone', [UserController::class, 'updatePhone']);
+        Route::post('/password', [UserController::class, 'updatePassword']);
+        Route::post('/profile-picture', [UserController::class, 'updateProfilePicture']);
+    });
 });
