@@ -131,7 +131,7 @@ class UserController extends Controller
         } elseif ($request->phone == User::where('phone', $request->phone)->first()) {
             return response([
                 'message' => 'Phone already exists',
-            ], 409);
+            ], 409); 
         }
         $user->phone = $request->phone;
         $user->save();
@@ -153,6 +153,25 @@ class UserController extends Controller
 
         return response([
             'message' => 'Password updated',
+            'user' => $user,
+        ], 200);
+    }
+
+    public function updateProfilePicture(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $user = User::where('email', auth()->user()->email)->first();
+        $image = $request->file('image');
+        $imageName = time() . '.' . $image->extension();
+        $image->move(public_path('images'), $imageName);
+        $user->image_path = $imageName;
+        $user->save();
+
+        return response([
+            'message' => 'Profile Picture updated',
             'user' => $user,
         ], 200);
     }
