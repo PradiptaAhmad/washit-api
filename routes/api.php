@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LaundryController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -25,9 +25,17 @@ Route::group(['prefix' => 'users'], function () {
     });
 });
 
-Route::group(['prefix' => 'laundry', 'middleware' => 'auth:sanctum'], function () {
-    Route::post('/add', [LaundryController::class, 'addLaundryServices']);
-    Route::post('/update-price', [LaundryController::class, 'updatePrice']);
-    Route::post('/delete', [LaundryController::class, 'deleteLaundryService']);
-    Route::get('/all', [LaundryController::class, 'getLaundryServices']);
+Route::group(['prefix' => 'orders', 'middleware' => 'auth:sanctum'], function () {
+    Route::post('/new', [OrderController::class, 'addOrder']);
+    Route::get('/all', [OrderController::class, 'getOrder']);
+    Route::delete('/delete/{id}', [OrderController::class, 'deleteOrder']);
+});
+
+Route::group(['prefix' => 'admin'], function () {
+    Route::group(['prefix' => 'laundry', 'middleware' => 'auth:sanctum'], function () {
+        Route::post('/add', [LaundryController::class, 'addLaundryServices']);
+        Route::post('/update-price', [LaundryController::class, 'updatePrice']);
+        Route::delete('/delete/{id}', [LaundryController::class, 'deleteLaundryService']);
+        Route::get('/all', [LaundryController::class, 'getLaundryServices']);
+    });
 });

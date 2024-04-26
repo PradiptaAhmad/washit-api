@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddLaundryRequest;
+use App\Http\Requests\DeleteRequest;
 use App\Models\Laundry;
 use Illuminate\Http\Request;
 
@@ -44,12 +45,9 @@ class LaundryController extends Controller
         ], 200);
     }
 
-    public function deleteLaundryService(Request $request)
+    public function deleteLaundryService($id)
     {
-        $request->validate([
-            'id' => 'required|integer',
-        ]);
-        $laundry = Laundry::where('id', $request->id)->first();
+        $laundry = Laundry::where('id', $id)->first();
         if ($laundry == null) {
             return response([
                 'message' => 'Laundry service not found',
