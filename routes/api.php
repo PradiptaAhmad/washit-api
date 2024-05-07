@@ -3,6 +3,7 @@
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LaundryController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OtpController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -15,7 +16,9 @@ Route::group(['prefix' => 'users'], function () {
     Route::get('/me', [UserController::class, 'details'])->middleware('auth:sanctum');
     Route::post('/update-profile-picture', [UserController::class, 'updateProfilePicture'])->middleware('auth:sanctum');
     Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
-
+    Route::post('/send-otp', [OtpController::class, 'sendOtp'])->middleware('auth:sanctum');
+    Route::post('/verify-otp', [OtpController::class, 'verifyOtp'])->middleware('auth:sanctum');
+    
     Route::group(['prefix' => 'update', 'middleware' => 'auth:sanctum'], function () {
         Route::post('/username', [UserController::class, 'updateUsername']);
         Route::post('/email', [UserController::class, 'updateEmail']);
