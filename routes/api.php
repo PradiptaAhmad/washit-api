@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LaundryController;
 use App\Http\Controllers\OrderController;
@@ -18,7 +19,7 @@ Route::group(['prefix' => 'users'], function () {
     Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
     Route::post('/send-otp', [OtpController::class, 'sendOtp'])->middleware('auth:sanctum');
     Route::post('/verify-otp', [OtpController::class, 'verifyOtp'])->middleware('auth:sanctum');
-    
+
     Route::group(['prefix' => 'update', 'middleware' => 'auth:sanctum'], function () {
         Route::post('/username', [UserController::class, 'updateUsername']);
         Route::post('/email', [UserController::class, 'updateEmail']);
@@ -35,10 +36,22 @@ Route::group(['prefix' => 'orders', 'middleware' => 'auth:sanctum'], function ()
 });
 
 Route::group(['prefix' => 'admin'], function () {
+
+    Route::group(['prefix' => 'accounts'], function () {
+        Route::post('/login', [AdminController::class, 'login']);
+        Route::post('/logout', [AdminController::class, 'logout']);
+    
+    });
+
     Route::group(['prefix' => 'laundry', 'middleware' => 'auth:sanctum'], function () {
         Route::post('/add', [LaundryController::class, 'addLaundryServices']);
         Route::post('/update-price', [LaundryController::class, 'updatePrice']);
         Route::delete('/delete/{id}', [LaundryController::class, 'deleteLaundryService']);
         Route::get('/all', [LaundryController::class, 'getLaundryServices']);
+    });
+
+    Route::group(['prefix' => 'user', 'middleware' => 'auth:sanctum'], function () {
+        Route::get('/all', [AdminController::class, 'getUser']);
+        Route::post('/ban', [AdminController::class, 'banUser']);
     });
 });
