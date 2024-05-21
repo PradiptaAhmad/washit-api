@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BanUserRequest;
 use App\Http\Requests\LoginRequests;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -29,6 +30,30 @@ class AdminController extends Controller
             'token' => $token,
         ], 200);
     }
+    public function register(RegisterRequest $request)
+    {
+        $request->validated();
+        $user = User::where('email', $request->email)->first();
+        if ($user != null) {
+            return response([
+                'message' => 'Email already exists',
+            ], 409);
+        }
+        $userdata = [
+            'username' => $request->username,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'password' => Hash::make($request->password),
+            'role' => 'admin',
+        ];
+        $user = User::create($userdata);
+        $token = $user->createToken('wash_it')->plainTextToken;
+        return response([
+            'user' => $user,
+            'token' => $token,
+        ], 201);
+    }
+
     public function logout()
     {
         $user = User::where('email', auth()->user()->email)->first();
