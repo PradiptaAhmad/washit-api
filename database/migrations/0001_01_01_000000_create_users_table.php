@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('role', ['user', 'admin'])->default('user');
             $table->string('image_path')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
-            $table->string('notification_token');
+            $table->string('notification_token')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

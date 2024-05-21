@@ -14,7 +14,7 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable, HasApiTokens;
 
-    /**  
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -25,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone',
         'role',
         'otp',
+        'notification_token',
         'password',
     ];
 
@@ -34,6 +35,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $hidden = [
+        'notification_token',
         'password',
         'remember_token',
     ];

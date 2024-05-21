@@ -2,19 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\DeleteRequest;
 use App\Http\Requests\OrderRequest;
 use App\Models\Order;
+use App\Models\User;
+use App\Services\FirebaseService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;  
 
 class OrderController extends Controller
 {
+    protected $firebaseService;
+
+    public function __construct(FirebaseService $firebaseService)
+    {
+        $this->firebaseService = $firebaseService;
+    }
     public function addOrder(OrderRequest $request)
     {
         $request->validated();
-        $user = Auth()->user();
+        $user = auth()->user();
 
         $date = date('YmdHis');
         $nomor_pemesanan = $user->id . $request->laundry_id . $date;
@@ -68,4 +74,46 @@ class OrderController extends Controller
             'message' => 'Order deleted successfully',
         ], 200);
     }
+
+    public function acceptOrder(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer',
+        ]);
+        $auth = User::where('email', auth()->user()->email)->first();
+        if ($auth->role != 'admin') {
+            return response([
+                'status' => 'failed',
+                'message' => 'Not authorized'
+            ], 401);
+        }
+        $order = Order::where('id', $request->id)->first();
+        if ($order == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Order Not Found'
+            ], 301);
+        }
+        if ($order->accepted == true) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Order Accepted'
+            ], 401);
+        }
+        $order->accepted = true;
+        $order->save();
+        $user = $order->user;
+        $title = "Halo " . $user->username . "Pesananmu telah kami terima";
+        $body = '';
+        if ($order->jenis_pemesanan == 'antar_jemput') {
+            $body = "Duduk santai dirumah laundry kamu akan segera diambil";
+        }
+        $body = "Pesanan dengan nomor " . $order->no_pemesanan . " telan kami terima";
+        $message = $this->firebaseService->sendNotification($user->notification_token, $title, $body, '');
+        return response([
+            'status' => 'success',
+            'message' => 'Order Accepted Notifiction sent successfully',
+        ], 201);
+    }
+
 }

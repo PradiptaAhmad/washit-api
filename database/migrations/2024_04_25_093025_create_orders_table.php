@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string("alamat")->nullable();
             $table->integer("berat_laundry")->nullable();
             $table->integer("total_harga")->nullable();
-            $table->string("status")->nullable();
             $table->timestamp("tanggal_pemesanan")->nullable();
             $table->datetime("tanggal_pengambilan")->nullable();
             $table->unsignedBigInteger("laundry_id")->default(0);
