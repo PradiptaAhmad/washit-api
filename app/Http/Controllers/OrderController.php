@@ -3,19 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\OrderRequest;
+use App\Models\Admin;
 use App\Models\Order;
+use App\Models\OrderStatus;
 use App\Models\User;
 use App\Services\FirebaseService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
     protected $firebaseService;
+    protected $updateStatusService;
 
-    public function __construct(FirebaseService $firebaseService)
+    public function __construct(FirebaseService $firebaseService, OrderStatus $updateStatusService)
     {
         $this->firebaseService = $firebaseService;
+        $this->updateStatusService = $updateStatusService;
     }
     public function addOrder(OrderRequest $request)
     {
@@ -75,7 +80,41 @@ class OrderController extends Controller
         ], 200);
     }
 
-    public function acceptOrder(Request $request)
+    public function updateStatus(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer',
+        ]);
+        $auth = Admin::where('email', Auth::guard('admin')->user()->email)->first();
+        $order = Order::where('id', $request->id)->first();
+        if ($order == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Order Not Found'
+            ], 301);
+        }
+        OrderStatus::create([
+            'status' => 'success',
+            'status_name' => 'Pesanan Telah Diterima',
+            'status_description' => 'Order Accepted',
+            'order_id' => $order->id,
+        ]);
+        $this->updateStatusService->updateStatus($request->id);
+        $user = $order->user;
+        $title = "Halo " . $user->username . "Pesananmu telah kami terima";
+        $body = '';
+        if ($order->jenis_pemesanan == 'antar_jemput') {
+            $body = "Duduk santai dirumah laundry kamu akan segera diambil";
+        }
+        $body = "Pesanan dengan nomor " . $order->no_pemesanan . " telan kami terima";
+        $message = $this->firebaseService->sendNotification($user->notification_token, $title, $body, '');
+        return response([
+            'status' => 'success',
+            'message' => 'Order Accepted Notifiction sent successfully',
+        ], 201);
+    }
+
+    public function rejectOrder(Request $request)
     {
         $request->validate([
             'id' => 'required|integer',
@@ -100,19 +139,23 @@ class OrderController extends Controller
                 'message' => 'Order Accepted'
             ], 401);
         }
-        $order->accepted = true;
-        $order->save();
+        OrderStatus::create([
+            'status' => 'failed',
+            'status_name' => 'Pesanan Ditolak',
+            'status_description' => 'Order Rejected',
+            'order_id' => $order->id,
+        ]);
         $user = $order->user;
-        $title = "Halo " . $user->username . "Pesananmu telah kami terima";
+        $title = "Hai " . $user->username . " Mohon maaf pesananmu tidak bisa kami terima";
         $body = '';
         if ($order->jenis_pemesanan == 'antar_jemput') {
-            $body = "Duduk santai dirumah laundry kamu akan segera diambil";
+            $body = "Maaf kami tidak bisa mengambil laundry kamu saat ini";
         }
-        $body = "Pesanan dengan nomor " . $order->no_pemesanan . " telan kami terima";
+        $body = "Mohon maaf pesanan dengan nomor " . $order->no_pemesanan . " tidak bisa kami terima";
         $message = $this->firebaseService->sendNotification($user->notification_token, $title, $body, '');
         return response([
             'status' => 'success',
-            'message' => 'Order Accepted Notifiction sent successfully',
+            'message' => 'Order Rejected Notifiction sent successfully',
         ], 201);
     }
 

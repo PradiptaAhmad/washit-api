@@ -33,7 +33,7 @@ class OtpController extends Controller
             'phoneNumber' => $phone,
             'message' => "Halo " . $user->username . ", " . $otp . " adalah kode OTP Anda. Demi Keamanan jangan berikan kode ini kepada siapapun.",
         ]);
-
+    
         Otp::create([
             "otp" => $otp,
             "user_id" => $user->id,

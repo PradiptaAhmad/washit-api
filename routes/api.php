@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BannedUserController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LaundryController;
 use App\Http\Controllers\NotificationController;
@@ -34,20 +35,22 @@ Route::group(['prefix' => 'orders', 'middleware' => 'auth:sanctum'], function ()
     Route::post('/new', [OrderController::class, 'addOrder']);
     Route::get('/all', [OrderController::class, 'getOrder']);
     Route::delete('/delete/{id}', [OrderController::class, 'deleteOrder']);
+    Route::post('/update', [OrderController::class, 'updateStatus']);
+
+    Route::group(['prefix' => '/update'], function () {
+        Route::post('/status', [OrderController::class, 'updateStatus']);
+        Route::get('/all', [OrderController::class, 'getStatus']);
+        Route::post('/add', [OrderController::class, 'addStatus']);
+        Route::delete('/delete/{id}', [OrderController::class, 'deleteStatus']);
+
 });
 
 Route::group(['prefix' => 'admin'], function () {
     Route::group(['prefix' => 'accounts'], function () {
         Route::post('/login', [AdminController::class, 'login']);
         Route::post('/register', [AdminController::class, 'register']);
-        Route::post('/logout', [AdminController::class, 'logout']);
+        Route::post('/logout', [AdminController::class, 'logout'])->middleware('auth:sanctum');
 
-    });
-
-    Route::group(['prefix' => 'order', 'middleware' => 'auth:sanctum'], function () {
-        Route::post('/accept', [OrderController::class, 'acceptOrder']);
-        Route::post('/register', [AdminController::class, 'register']);
-        Route::post('/logout', [AdminController::class, 'logout']);
     });
 
     Route::group(['prefix' => 'laundry', 'middleware' => 'auth:sanctum'], function () {
@@ -57,9 +60,9 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/all', [LaundryController::class, 'getLaundryServices']);
     });
 
-    Route::group(['prefix' => 'user', 'middleware' => 'auth:sanctum'], function () {
+    Route::group(['prefix' => 'users', 'middleware' => 'auth:sanctum'], function () {
         Route::get('/all', [AdminController::class, 'getUser']);
-        Route::post('/ban', [AdminController::class, 'banUser']);
+        Route::post('/ban', [BannedUserController::class, 'banUser']);
     });
 });
 

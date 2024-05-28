@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BanUserRequest;
 use App\Http\Requests\LoginRequests;
 use App\Http\Requests\RegisterRequest;
+use App\Models\Admin;
+use App\Models\Order;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
@@ -14,14 +17,10 @@ class AdminController extends Controller
     {
         $request->validated();
 
-        $user = User::where('email', $request->email)->first();
+        $user = Admin::where('email', $request->email)->first();
         if ($user == null | !Hash::check($request->password, $user->password)) {
             return response([
                 'message' => 'Invalid credentials',
-            ], 401);
-        } else if ($user->role != 'admin') {
-            return response([
-                'message' => 'You are not authorized',
             ], 401);
         }
         $token = $user->createToken('wash_it')->plainTextToken;
@@ -33,7 +32,7 @@ class AdminController extends Controller
     public function register(RegisterRequest $request)
     {
         $request->validated();
-        $user = User::where('email', $request->email)->first();
+        $user = Admin::where('email', $request->email)->first();
         if ($user != null) {
             return response([
                 'message' => 'Email already exists',
@@ -46,17 +45,17 @@ class AdminController extends Controller
             'password' => Hash::make($request->password),
             'role' => 'admin',
         ];
-        $user = User::create($userdata);
+        $user = Admin::create($userdata);
         $token = $user->createToken('wash_it')->plainTextToken;
-        return response([
-            'user' => $user,
+        return response(['admin' => $user,
             'token' => $token,
         ], 201);
     }
 
     public function logout()
     {
-        $user = User::where('email', auth()->user()->email)->first();
+        $user = Admin::where('email', auth()->user()->email)->first();
+        $user->tokens()->delete();
         return response([
             'message' => 'Logged out',
         ], 200);
@@ -64,31 +63,27 @@ class AdminController extends Controller
 
     public function getUser()
     {
-        $user = Auth()->user();
-        if ($user->role != 'admin') {
-            return response([
-                'message' => 'You are not authorized',
-            ], 401);
-        }
-        $user = User::where('role', 'user')->get();
-        return response([
-            'message' => 'User fetched succes',
+        $user = Auth::guard('admin')->user();
+        $user = User::all();
+        return response(['status' => 'success',
+            'message' => 'User fetched successfully',
             'user' => $user,
         ], 200);
     }
 
-    public function banUser(BanUserRequest $request)
+    public function getOrder()
     {
-        $request->validated();
-        $user = User::where('id', $request->id)->first();
-        if ($user == null) {
-            return response([
-                'message' => 'User not found',
-            ], 404);
-        }
-        $user->delete();
-        return response([
-            'message' => 'User deleted successfully',
-        ], 200);
+        $admin = Auth::guard('admin')->user();
+        $order = Order::all();
+        return response(
+            [
+                'status' => 'success',
+                'message' => 'Order fetched by ' . $admin->username,
+                'order' => $order,
+            ],
+            200
+        );
     }
+
+
 }

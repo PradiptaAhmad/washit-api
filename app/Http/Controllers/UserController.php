@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequests;
 use App\Http\Requests\RegisterRequest;
+use App\Models\BannedUser;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
@@ -45,14 +46,21 @@ class UserController extends Controller
         $request->validated();
 
         $user = User::where('email', $request->email)->first();
-
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response([
                 'status' => 'failed',
                 'message' => 'Invalid credentials',
             ], 401);
         }
-
+        $bannedUser = BannedUser::where('user_id', $user->id)->first();
+        if ($bannedUser != null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'User Banned',
+                'reason' => $bannedUser->reason,
+                'unbanned_at' => $bannedUser->unbanned_at,
+            ], 401);
+        }
         $token = $user->createToken('wash_it')->plainTextToken;
         $user->notification_token = $request->notification_token;
         $user->save();
