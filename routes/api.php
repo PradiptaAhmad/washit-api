@@ -42,7 +42,7 @@ Route::group(['prefix' => 'orders', 'middleware' => 'auth:sanctum'], function ()
         Route::get('/all', [OrderController::class, 'getStatus']);
         Route::post('/add', [OrderController::class, 'addStatus']);
         Route::delete('/delete/{id}', [OrderController::class, 'deleteStatus']);
-
+    });
 });
 
 Route::group(['prefix' => 'admin'], function () {
@@ -66,7 +66,7 @@ Route::group(['prefix' => 'admin'], function () {
     });
 });
 
-Route::group(['prefix' => '/notification', 'middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix' => 'notifications', 'middleware' => 'auth:sanctum'], function () {
     Route::post('/send', [NotificationController::class, 'sendNotification']);
-    Route::post('/send-to-all', [NotificationController::class, 'sendNotificationToAll']);
+    Route::get('/all', [NotificationController::class, 'getNotifications']);
 });
