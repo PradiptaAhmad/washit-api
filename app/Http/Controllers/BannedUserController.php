@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BanUserRequest;
 use App\Http\Requests\UnbanRequest;
 use App\Models\BannedUser;
 use App\Models\User;
@@ -32,7 +33,29 @@ class BannedUserController extends Controller
        ]);
     }
 
-    
+    public function banUser(BanUserRequest $request)
+    {
+        $request->validated();
+        $user = User::where('id', $request->user_id)->first();
+        if ($user == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'User not found',
+            ], 404);
+        }
+        $banned = BannedUser::create([
+            'user_id' => $request->user_id,
+            'reason' => $request->reason,
+            'description' => $request->description,
+            'unbanned_at' => $request->unbanned_at
+        ]);
+        return response([
+            'status' => 'success',
+            'message' => 'User banned successfully',
+
+        ], 200);
+    }
+
 
 
 }

@@ -23,6 +23,7 @@ class BanUserRequest extends FormRequest
     {
         return [
             'user_id' => 'required|integer',
+            'reason' => 'required|string'
         ];
     }
 }
