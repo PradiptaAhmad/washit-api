@@ -20,7 +20,7 @@ class UserController extends Controller
                 'status' => 'failed',
                 'message' => 'Email already exists',
             ], 409);
-        } elseif ($request->phone == User::where('phone', $request->phone)->first()) {
+        } else if ($request->phone == User::where('phone', $request->phone)->first()) {
             return response([
                 'status' => 'failed',
                 'message' => 'Phone already exists',

@@ -29,11 +29,10 @@ class OtpController extends Controller
                 'message' => "Phone Number Verified"
             ]);
         }
-        Http::post('https://apiwa.pradiptaahmad.tech/message', [
+        Http::post('https://wapiiiiiii-957b9f860ed5.herokuapp.com/message/', [
             'phoneNumber' => $phone,
             'message' => "Halo " . $user->username . ", " . $otp . " adalah kode OTP Anda. Demi Keamanan jangan berikan kode ini kepada siapapun.",
         ]);
-    
         Otp::create([
             "otp" => $otp,
             "user_id" => $user->id,
