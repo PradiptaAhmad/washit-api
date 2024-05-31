@@ -189,7 +189,7 @@ class UserController extends Controller
         $user = User::where('email', auth()->user()->email)->first();
         $image = $request->file('image');
         $imageName = time() . '.' . $image->extension();
-        $image->move(public_path('images'), $imageName);
+        $image->move(storage_path('/app/public/images/'), $imageName);
         $user->image_path = $imageName;
         $user->save();
 
