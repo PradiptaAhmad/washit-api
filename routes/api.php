@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BannedUserController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LaundryController;
 use App\Http\Controllers\NotificationController;
@@ -64,6 +65,12 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/all', [AdminController::class, 'getUser']);
         Route::post('/ban', [BannedUserController::class, 'banUser']);
     });
+});
+
+Route::group(['prefix' => '/histories', 'middleware' => 'auth:sanctum'], function () {
+    Route::get('/all', [HistoryController::class, 'getHistory']);
+    Route::post('/add', [HistoryController::class, 'addHistory']);
+    Route::delete('/delete/{id}', [HistoryController::class, 'deleteHistory']);
 });
 
 Route::group(['prefix' => 'notifications', 'middleware' => 'auth:sanctum'], function () {

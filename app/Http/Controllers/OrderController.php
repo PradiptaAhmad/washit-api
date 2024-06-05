@@ -38,7 +38,6 @@ class OrderController extends Controller
             'jenis_pemesanan' => $request->jenis_pemesanan,
             'alamat' => $request->alamat,
             'tanggal_pemesanan' => $tanggal_pemesanan,
-            'status' => 'Menunggu Konfirmasi',
             'tanggal_pengambilan' => $request->tanggal_pengambilan,
             'laundry_id' => $request->laundry_id,
             'user_id' => $user->id,
