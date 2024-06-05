@@ -54,6 +54,12 @@ class OtpController extends Controller
         $otp = $request->otp;
         $otps = Otp::where('user_id', $user->id)->first();
 
+        if ($otps == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'OTP not found',
+            ], 404);
+        }
         if ($otp == $otps->otp) {
             $otps->delete();
             $user->phone_verified_at = Carbon::now();
@@ -66,7 +72,7 @@ class OtpController extends Controller
             return response([
                 'status' => 'failed',
                 'message' => 'OTP verification failed',
-            ], 200);
+            ], 401);
         }
     }
 }

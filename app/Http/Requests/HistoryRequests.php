@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class OrderRequest extends FormRequest
+class HistoryRequests extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -22,14 +22,7 @@ class OrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'jenis_pemesanan' => 'required|in:' . implode(',', ['antar_jemput', 'antar_mandiri']),
-            'nama_pemesan' => 'required|string',
-            'nomor_telepon' => 'required|string|max:255',
-            'alamat' => 'string',
-            'tanggal_pemesanan' => 'nullable|date',
-            'tanggal_pengambilan' => 'nullable|date',
-            'laundry_id' => 'required|integer',
+            //
         ];
     }
 }
- 
