@@ -7,18 +7,14 @@ use App\Http\Requests\UnbanRequest;
 use App\Models\BannedUser;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BannedUserController extends Controller
 {
-    public function unbanUser(UnbanRequest $request) {
-       $admin = Auth()->user();
-       if ($admin->role == 'user') {
-        return response(['status' => 'failed',
-            'message' => "You are not authorized"
-        ], 301);
-       }
+    public function unbanUser($id) {
+        $admin = Auth::guard('admin')->user();
 
-       $bannedUser = BannedUser::where('user_id', $request->id )->first();
+       $bannedUser = BannedUser::where('user_id', $id )->first();
        if ($bannedUser == null) {
         return response([
             'status' => 'failed',
@@ -36,6 +32,7 @@ class BannedUserController extends Controller
     public function banUser(BanUserRequest $request)
     {
         $request->validated();
+        $admin = Auth::guard('admin')->user();
         $user = User::where('id', $request->user_id)->first();
         if ($user == null) {
             return response([

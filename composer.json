@@ -9,6 +9,7 @@
         "kreait/firebase-php": "^7.0.0",
         "kreait/laravel-firebase": "5.8.0",
         "laravel/framework": "^11.0",
+        "laravel/passport": "^12.2",
         "laravel/reverb": "@beta",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9"

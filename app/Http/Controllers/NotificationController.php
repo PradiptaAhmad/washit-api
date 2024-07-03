@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\NotificationRequest;
+use App\Models\User;
 use App\Services\FirebaseService;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Messaging\CloudMessage;
@@ -20,14 +21,14 @@ class NotificationController extends Controller
 
         $account = auth()->user();
 
-        if ($account->role !== 'admin') {
-            return response([
-                'status' => 'failed',
-                'message' => 'You are not authorized to send notification'
-            ], 403);
-        }
-
-        $deviceToken = $request->device_id;
+        // if ($account->role !== 'admin') {
+        //     return response([
+        //         'status' => 'failed',
+        //         'message' => 'You are not authorized to send notification'
+        //     ], 403);
+        // }
+        $user = User::where('id', $request->user_id)->first();
+        $deviceToken = $user->notification_token;
         $title = $request->title;
         $body = $request->body;
         $imageUrl = $request->imaageUrl;

@@ -17,13 +17,13 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'users'], function () {
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
-    Route::get('/me', [UserController::class, 'details'])->middleware('auth:sanctum');
-    Route::post('/update-profile-picture', [UserController::class, 'updateProfilePicture'])->middleware('auth:sanctum');
-    Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
-    Route::post('/send-otp', [OtpController::class, 'sendOtp'])->middleware('auth:sanctum');
-    Route::post('/verify-otp', [OtpController::class, 'verifyOtp'])->middleware('auth:sanctum');
+    Route::get('/me', [UserController::class, 'details'])->middleware('auth:user');
+    Route::post('/update-profile-picture', [UserController::class, 'updateProfilePicture'])->middleware('auth:user');
+    Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:user');
+    Route::post('/send-otp', [OtpController::class, 'sendOtp'])->middleware('auth:user');
+    Route::post('/verify-otp', [OtpController::class, 'verifyOtp'])->middleware('auth:user');
 
-    Route::group(['prefix' => 'update', 'middleware' => 'auth:sanctum'], function () {
+    Route::group(['prefix' => 'update', 'middleware' => 'auth:user'], function () {
         Route::post('/username', [UserController::class, 'updateUsername']);
         Route::post('/email', [UserController::class, 'updateEmail']);
         Route::post('/phone', [UserController::class, 'updatePhone']);
@@ -32,7 +32,7 @@ Route::group(['prefix' => 'users'], function () {
     });
 });
 
-Route::group(['prefix' => 'orders', 'middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix' => 'orders', 'middleware' => 'auth:user'], function () {
     Route::post('/new', [OrderController::class, 'addOrder']);
     Route::get('/all', [OrderController::class, 'getOrder']);
     Route::delete('/delete/{id}', [OrderController::class, 'deleteOrder']);
@@ -50,24 +50,26 @@ Route::group(['prefix' => 'admin'], function () {
     Route::group(['prefix' => 'accounts'], function () {
         Route::post('/login', [AdminController::class, 'login']);
         Route::post('/register', [AdminController::class, 'register']);
-        Route::post('/logout', [AdminController::class, 'logout'])->middleware('auth:sanctum');
+        Route::get('/details', [AdminController::class, 'adminDetails'])->middleware('auth:admin');
+        Route::post('/logout', [AdminController::class, 'logout'])->middleware('auth:admin');
 
     });
 
-    Route::group(['prefix' => 'laundry', 'middleware' => 'auth:sanctum'], function () {
+    Route::group(['prefix' => 'laundry', 'middleware' => 'auth:admin'], function () {
         Route::post('/add', [LaundryController::class, 'addLaundryServices']);
         Route::post('/update-price', [LaundryController::class, 'updatePrice']);
         Route::delete('/delete/{id}', [LaundryController::class, 'deleteLaundryService']);
         Route::get('/all', [LaundryController::class, 'getLaundryServices']);
     });
 
-    Route::group(['prefix' => 'users', 'middleware' => 'auth:sanctum'], function () {
+    Route::group(['prefix' => 'users', 'middleware' => 'auth:admin'], function () {
         Route::get('/all', [AdminController::class, 'getUser']);
         Route::post('/ban', [BannedUserController::class, 'banUser']);
+        Route::delete('/unban/{id}', [BannedUserController::class, 'unBanUser']);
     });
 });
 
-Route::group(['prefix' => '/histories', 'middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix' => '/histories', 'middleware' => 'auth:user'], function () {
     Route::get('/all', [HistoryController::class, 'getHistory']);
     Route::post('/add', [HistoryController::class, 'addHistory']);
     Route::delete('/delete/{id}', [HistoryController::class, 'deleteHistory']);
