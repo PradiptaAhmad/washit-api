@@ -34,7 +34,7 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ];
         $user = User::create($userdata);
-        $token = $user->createToken('wash_it')->plainTextToken;
+        $token = $user->createToken('wash_it')->accessToken;
 
         return response([
             'user' => $user,
@@ -61,7 +61,7 @@ class UserController extends Controller
                 'unbanned_at' => $bannedUser->unbanned_at,
             ], 401);
         }
-        $token = $user->createToken('wash_it')->plainTextToken;
+        $token = $user->createToken('wash_it')->accessToken;
         $user->notification_token = $request->notification_token;
         $user->save();
 

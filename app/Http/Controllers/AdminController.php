@@ -23,7 +23,7 @@ class AdminController extends Controller
                 'message' => 'Invalid credentials',
             ], 401);
         }
-        $token = $user->createToken('wash_it')->plainTextToken;
+        $token = $user->createToken('admin_washit')->accessToken;
         return response([
             'user' => $user,
             'token' => $token,
@@ -43,13 +43,22 @@ class AdminController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'role' => 'admin',
         ];
         $user = Admin::create($userdata);
-        $token = $user->createToken('wash_it')->plainTextToken;
-        return response(['admin' => $user,
+        $token = $user->createToken('admin_washit')->accessToken;
+        return response([
+            'admin' => $user,
             'token' => $token,
         ], 201);
+    }
+
+    public function adminDetails()
+    {
+        $admin = auth()->user();
+        return response([
+            'status' => 'success',
+            'admin' => $admin,
+        ], 200);
     }
 
     public function logout()
@@ -63,7 +72,6 @@ class AdminController extends Controller
 
     public function getUser()
     {
-        $user = Auth::guard('admin')->user();
         $user = User::all();
         return response(['status' => 'success',
             'message' => 'User fetched successfully',
