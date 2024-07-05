@@ -25,7 +25,6 @@ return new class extends Migration
             $table->datetime("tanggal_pengambilan")->nullable();
             $table->unsignedBigInteger("laundry_id")->default(0);
             $table->unsignedBigInteger("user_id")->default(0);
-            $table->unsignedBigInteger("trasanction_id");
             $table->timestamps();
 
             $table->foreign("laundry_id")->references("id")->on("laundries")->onDelete("cascade");

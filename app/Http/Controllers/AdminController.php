@@ -18,8 +18,9 @@ class AdminController extends Controller
         $request->validated();
 
         $user = Admin::where('email', $request->email)->first();
-        if ($user == null | !Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response([
+                'status' => 'failed',
                 'message' => 'Invalid credentials',
             ], 401);
         }

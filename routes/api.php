@@ -8,6 +8,7 @@ use App\Http\Controllers\LaundryController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OtpController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -75,7 +76,11 @@ Route::group(['prefix' => '/histories', 'middleware' => 'auth:user'], function (
     Route::delete('/delete/{id}', [HistoryController::class, 'deleteHistory']);
 });
 
-Route::group(['prefix' => 'notifications', 'middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix' => 'notifications', 'middleware' => 'auth:admin'], function () {
     Route::post('/send', [NotificationController::class, 'sendNotification']);
     Route::get('/all', [NotificationController::class, 'getNotifications']);
+});
+
+Route::group(['prefix' => 'payments', 'middleware' => 'auth:user'], function () {
+    Route::post('/create', [PaymentController::class, 'createPayment']);
 });
