@@ -63,4 +63,34 @@ class PaymentController extends Controller
             'checkout_link' => $response['invoice_url'],
         ], 201);
     }
+
+    public function expirePayment(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|integer',
+        ]);
+        $payment = Payment::where('order_id', $request->order_id)->first();
+        if ($payment == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Payment not found',
+            ], 404);
+        }
+        if($payment->status == 'expired') {
+            return response([
+                'status' => 'failed',
+                'message' => 'Payment already expired',
+            ], 400);
+        }
+        $this->invoiceApi->expireInvoice($payment->invoice_id);
+        $payment->status = 'expired';
+        $payment->save();
+
+        return response([
+            'status' => 'success',
+            'message' => 'Payment expired',
+        ], 200);
+    }
+
+    
 }
