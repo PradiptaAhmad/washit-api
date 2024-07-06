@@ -83,4 +83,6 @@ Route::group(['prefix' => 'notifications', 'middleware' => 'auth:admin'], functi
 
 Route::group(['prefix' => 'payments', 'middleware' => 'auth:user'], function () {
     Route::post('/create', [PaymentController::class, 'createPayment']);
+    Route::post('/update', [PaymentController::class, 'updatePaymentStatus']);
+    Route::delete('/expire/{id}', [PaymentController::class, 'expirePayment']);
 });

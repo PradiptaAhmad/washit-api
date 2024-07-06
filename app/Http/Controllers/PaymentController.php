@@ -8,11 +8,13 @@ use App\Http\Requests\PaymentRequest;
 use App\Models\Order;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Xendit\Configuration;
-use Xendit\Invoice\Invoice;
 use Xendit\Invoice\InvoiceApi;
+use Xendit\Invoice;
+use Xendit\Invoice\Invoice as InvoiceInvoice;
 
-Configuration::setXenditKey('xnd_development_c4YytwtLcsFH5XnTvzCySGI3JNqWg4rWFK13VNg4Fl0ValXaBrlFPIOd5xPxxKI1');
+Configuration::setXenditKey(env('XENDIT_SECRET_KEY'));
 
 
 class PaymentController extends Controller
@@ -33,7 +35,14 @@ class PaymentController extends Controller
         $amount = $request->amount;
 
         $transaction = Payment::where('order_id', $order->id)->first();
-        if ($transaction != null) {
+        if($transaction->status == 'paid')
+        {
+            return response([
+                'status' => 'failed',
+                'message' => 'Payment already paid',
+            ], 400);
+        }
+        if ($transaction != null && $transaction->status == 'pending') {
             return response([
                 'status' => 'success',
                 'message' => 'Payment created successfully',
@@ -64,12 +73,9 @@ class PaymentController extends Controller
         ], 201);
     }
 
-    public function expirePayment(Request $request)
+    public function expirePayment($id)
     {
-        $request->validate([
-            'order_id' => 'required|integer',
-        ]);
-        $payment = Payment::where('order_id', $request->order_id)->first();
+        $payment = Payment::where('order_id', $id)->first();
         if ($payment == null) {
             return response([
                 'status' => 'failed',
@@ -92,5 +98,29 @@ class PaymentController extends Controller
         ], 200);
     }
 
-    
+    public function updatePaymentStatus(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|integer',
+        ]);
+        $payment = Payment::where('order_id', $request->order_id)->first();
+        if ($payment == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Payment not found',
+            ], 404);
+        }
+        $response = Http::withHeaders([
+            'Authorization' => 'Basic ' . base64_encode(env("XENDIT_SECRET_KEY") . ':'),
+        ])->get('https://api.xendit.co/v2/invoices/' . $payment->invoice_id);
+
+        $payment->status = strtolower(json_decode($response->body(), true)['status']);
+        $payment->save();
+
+        return response([
+            'status' => 'success',
+            'message' => 'Payment status updated',
+            'payment_status' => $payment->status,
+        ], 200);
+    }
 }
