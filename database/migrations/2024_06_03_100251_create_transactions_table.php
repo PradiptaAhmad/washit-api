@@ -13,9 +13,20 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('reference_number');
+            $table->string('external_id')->nullable();
+            $table->string('payment_method')->nullable();
+            $table->string('status')->nullable();
+            $table->string('amount')->nullable();
+            $table->string('adjusted_received_amount')->nullable();
+            $table->string('fees_paid_amount')->nullable();
+            $table->string('payment_channel')->nullable();
+            $table->string('payment_destination')->nullable();
+            $table->timestamp('paid_at')->nullable();
             $table->unsignedBigInteger('history_id');
             $table->timestamps();
+
+            $table->foreign('history_id')->references('id')->on('histories')->onDelete('cascade');
+
         });
     }
 
@@ -24,6 +35,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('transactions', function (Blueprint $table) {
+            $table->dropForeign(['history_id']);
+        });
         Schema::dropIfExists('transactions');
     }
 };

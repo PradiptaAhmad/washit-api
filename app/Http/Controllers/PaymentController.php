@@ -31,8 +31,8 @@ class PaymentController extends Controller
         $user = auth()->user();
         $order = Order::where('id', $request->order_id)->first();
         $external_id = (string) date('YmdHis');
-        $description = $request->description;
-        $amount = $request->amount;
+        $description = 'Membayar Laundry ' . $order->laundry->nama_laundry . ' ' . $user->username;
+        $amount = $order->total_harga;
 
         $transaction = Payment::where('order_id', $order->id)->first();
         if($transaction->status == 'paid')
@@ -117,6 +117,23 @@ class PaymentController extends Controller
         $payment->status = strtolower(json_decode($response->body(), true)['status']);
         $payment->save();
 
+        return response([
+            'status' => 'success',
+            'message' => 'Payment status updated',
+            'payment_status' => $payment->status,
+        ], 200);
+    }
+
+    public function invoiceStatus(Request $request)
+    {
+        $payment = Payment::where('external_id', $request->external_id)->first();
+        if ($payment == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Payment not found',
+            ], 404);
+        }
+        $payment->status = strtolower($request->status);
         return response([
             'status' => 'success',
             'message' => 'Payment status updated',

@@ -23,8 +23,7 @@ class PaymentRequest extends FormRequest
     {
         return [
             'order_id' => 'required|integer|exists:orders,id',
-            'description' => 'required|string',
-            'amount' => 'required|integer',
+            'description' => 'nullable|string',
         ];
     }
 }
