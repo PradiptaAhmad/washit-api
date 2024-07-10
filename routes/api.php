@@ -90,6 +90,7 @@ Route::group(['prefix' => 'payments'], function () {
         Route::post('/create', [PaymentController::class, 'createPayment']);
         Route::post('/update', [PaymentController::class, 'updatePaymentStatus']);
         Route::delete('/expire/{id}', [PaymentController::class, 'expirePayment']);
+        Route::get('/get', [PaymentController::class, 'getInvoiceUser']);
     });
 
     Route::group(['prefix' => 'callback', 'middleware' => 'xendit-callback'], function () {

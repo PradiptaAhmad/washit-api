@@ -11,8 +11,6 @@ use App\Services\FirebaseService;
 use App\Services\XenditService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Xendit\Invoice\InvoiceApi;
 
 
 class PaymentController extends Controller
@@ -144,6 +142,31 @@ class PaymentController extends Controller
             'status' => 'success',
             'message' => 'Payment status updated',
             'payment_status' => $payment->status,
+        ], 200);
+    }
+
+    public function getInvoiceUser(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|integer',
+        ]);
+        $payment = Payment::where('order_id', $request->order_id)->first();
+        if ($payment == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Payment not found. You can create payment first',
+            ], 404);
+        }
+        return response([
+            'status' => 'success',
+            'message' => 'Payment for order ' . $payment->order->nama_pemesan,
+            'payment' => $payment->only([
+                'status',
+                'checkout_link',
+                'external_id',
+                'user_id',
+                'order_id'
+            ]),
         ], 200);
     }
 }
