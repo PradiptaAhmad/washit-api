@@ -58,9 +58,12 @@ class OrderController extends Controller
                 'message' => 'Order is empty',
             ], 200);
         }
+
+        $orderArray =  $order->toArray();
+        $orderArray['status'] = $order->status;
         return response([
             'message' => 'Order fetched successfully',
-            'order' => $order,
+            'order' => $orderArray,
         ], 200);
     }
 

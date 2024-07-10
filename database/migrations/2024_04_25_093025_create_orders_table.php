@@ -20,12 +20,10 @@ return new class extends Migration
             $table->string("alamat")->nullable();
             $table->integer("berat_laundry")->nullable();
             $table->integer("total_harga")->nullable();
-            $table->string('payment_method')->default('cashless');
             $table->timestamp("tanggal_pemesanan")->nullable();
             $table->datetime("tanggal_pengambilan")->nullable();
             $table->unsignedBigInteger("laundry_id")->default(0);
             $table->unsignedBigInteger("user_id")->default(0);
-            $table->unsignedBigInteger("trasanction_id");
             $table->timestamps();
 
             $table->foreign("laundry_id")->references("id")->on("laundries")->onDelete("cascade");

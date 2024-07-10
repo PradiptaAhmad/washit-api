@@ -15,12 +15,13 @@ class UserController extends Controller
     {
         $request->validated();
 
-        if ($request->email == User::where('email', $request->email)->first()) {
+        if (User::where('email', $request->email)->first() != null) {
             return response([
                 'status' => 'failed',
                 'message' => 'Email already exists',
             ], 409);
-        } else if ($request->phone == User::where('phone', $request->phone)->first()) {
+        }
+        if (User::where('phone', $request->phone)->first() != null) {
             return response([
                 'status' => 'failed',
                 'message' => 'Phone already exists',
@@ -32,6 +33,7 @@ class UserController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
+            'notification_token' => $request->notification_token,
         ];
         $user = User::create($userdata);
         $token = $user->createToken('wash_it')->accessToken;
@@ -121,7 +123,7 @@ class UserController extends Controller
                 'status' => 'failed',
                 'message' => 'Email Cannot be the same as the previous one',
             ], 409);
-        } elseif ($request->email == User::where('email', $request->email)->first()) {
+        } elseif (User::where('email', $request->email)->first() != null) {
             return response([
                 'status' => 'failed',
                 'message' => 'Email already exists',
@@ -148,7 +150,7 @@ class UserController extends Controller
                 'status' => 'failed',
                 'message' => 'Phone Cannot be the same as the previous one',
             ], 409);
-        } elseif ($request->phone == User::where('phone', $request->phone)->first()) {
+        } elseif (User::where('phone', $request->phone)->first() != null) {
             return response([
                 'status' => 'failed',
                 'message' => 'Phone already exists',

@@ -8,6 +8,7 @@ use App\Http\Controllers\LaundryController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OtpController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -17,18 +18,22 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'users'], function () {
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
-    Route::get('/me', [UserController::class, 'details'])->middleware('auth:user');
-    Route::post('/update-profile-picture', [UserController::class, 'updateProfilePicture'])->middleware('auth:user');
-    Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:user');
-    Route::post('/send-otp', [OtpController::class, 'sendOtp'])->middleware('auth:user');
-    Route::post('/verify-otp', [OtpController::class, 'verifyOtp'])->middleware('auth:user');
 
-    Route::group(['prefix' => 'update', 'middleware' => 'auth:user'], function () {
-        Route::post('/username', [UserController::class, 'updateUsername']);
-        Route::post('/email', [UserController::class, 'updateEmail']);
-        Route::post('/phone', [UserController::class, 'updatePhone']);
-        Route::post('/password', [UserController::class, 'updatePassword']);
-        Route::post('/profile-picture', [UserController::class, 'updateProfilePicture']);
+    Route::group(['middleware' => 'auth:user'], function () {
+        Route::get('/me', [UserController::class, 'details']);
+        Route::post('/update-profile-picture', [UserController::class, 'updateProfilePicture']);
+        Route::post('/logout', [UserController::class, 'logout']);
+        Route::post('/send-otp', [OtpController::class, 'sendOtp']);
+        Route::post('/verify-otp', [OtpController::class, 'verifyOtp']);
+
+        Route::group(['prefix' => 'update',], function () {
+            Route::post('/username', [UserController::class, 'updateUsername']);
+            Route::post('/email', [UserController::class, 'updateEmail']);
+            Route::post('/phone', [UserController::class, 'updatePhone']);
+            Route::post('/password', [UserController::class, 'updatePassword']);
+            Route::post('/profile-picture', [UserController::class, 'updateProfilePicture']);
+        });
+
     });
 });
 
@@ -75,7 +80,20 @@ Route::group(['prefix' => '/histories', 'middleware' => 'auth:user'], function (
     Route::delete('/delete/{id}', [HistoryController::class, 'deleteHistory']);
 });
 
-Route::group(['prefix' => 'notifications', 'middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix' => 'notifications', 'middleware' => 'auth:admin'], function () {
     Route::post('/send', [NotificationController::class, 'sendNotification']);
     Route::get('/all', [NotificationController::class, 'getNotifications']);
+});
+
+Route::group(['prefix' => 'payments'], function () {
+    Route::group(['middleware' => 'auth:user'], function () {
+        Route::post('/create', [PaymentController::class, 'createPayment']);
+        Route::post('/update', [PaymentController::class, 'updatePaymentStatus']);
+        Route::delete('/expire/{id}', [PaymentController::class, 'expirePayment']);
+        Route::get('/get', [PaymentController::class, 'getInvoiceUser']);
+    });
+
+    Route::group(['prefix' => 'callback', 'middleware' => 'xendit-callback'], function () {
+        Route::post('/invoice-status', [PaymentController::class, 'invoiceStatus']);
+    });
 });
