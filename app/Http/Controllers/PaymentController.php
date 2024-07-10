@@ -7,22 +7,22 @@ require_once base_path('/vendor/autoload.php');
 use App\Http\Requests\PaymentRequest;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Services\FirebaseService;
+use App\Services\XenditService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Xendit\Configuration;
 use Xendit\Invoice\InvoiceApi;
-use Xendit\Invoice;
-use Xendit\Invoice\Invoice as InvoiceInvoice;
-
-Configuration::setXenditKey(env('XENDIT_SECRET_KEY'));
 
 
 class PaymentController extends Controller
 {
-    protected $invoiceApi;
-    public function __construct(InvoiceApi $invoiceApi)
+    protected $XenditService;
+    protected $firebaseService;
+    public function __construct(XenditService $xenditService, FirebaseService $firebaseService)
     {
-        $this->invoiceApi = $invoiceApi;
+        $this->XenditService = $xenditService;
+        $this->firebaseService = $firebaseService;
     }
 
     public function createPayment(PaymentRequest $request)
@@ -35,13 +35,6 @@ class PaymentController extends Controller
         $amount = $order->total_harga;
 
         $transaction = Payment::where('order_id', $order->id)->first();
-        if($transaction->status == 'paid')
-        {
-            return response([
-                'status' => 'failed',
-                'message' => 'Payment already paid',
-            ], 400);
-        }
         if ($transaction != null && $transaction->status == 'pending') {
             return response([
                 'status' => 'success',
@@ -49,13 +42,19 @@ class PaymentController extends Controller
                 'checkout_link' => $transaction->checkout_link,
             ], 201);
         }
+        if ($transaction != null && $transaction->status == 'paid') {
+            return response([
+                'status' => 'failed',
+                'message' => 'Payment already paid',
+            ], 400);
+        }
         $options = [
             'external_id' => $external_id,
             'description' => $description,
             'amount' => $amount,
             'currency' => 'IDR',
         ];
-        $response = $this->invoiceApi->createInvoice($options);
+        $response = $this->XenditService->createInvoice($options);
 
         $payment = new Payment();
         $payment->status = 'pending';
@@ -66,10 +65,15 @@ class PaymentController extends Controller
         $payment->order_id = $order->id;
         $payment->save();
 
+        // send notification to user
+        $expiredDate = Carbon::parse($response['expiry_date']);
+        $description = 'Menunggu pembayaran laundry  ' . $order->no_pemesanan . ' ' . '. Bayar sebelum tamggal ' . $expiredDate->format('d F Y') . ' pukul ' . $expiredDate->format('H:i') . ' WIB';
+        $this->firebaseService->sendNotification($payment->user->notification_token, 'Menunggu Pembayaran', 'Tenang kamu bisa membuat pembayaran lagi', '');
         return response([
             'status' => 'success',
             'message' => 'Payment created successfully',
             'checkout_link' => $response['invoice_url'],
+            'description' => $description,
         ], 201);
     }
 
@@ -88,9 +92,12 @@ class PaymentController extends Controller
                 'message' => 'Payment already expired',
             ], 400);
         }
-        $this->invoiceApi->expireInvoice($payment->invoice_id);
+        $this->XenditService->expireInvoice($payment->invoice_id);
         $payment->status = 'expired';
         $payment->save();
+
+        // send notification to user
+        $this->firebaseService->sendNotification($payment->user->notification_token, 'Pembayaranmu telah dibatalkan', 'Tenang kamu bisa membuat pembayaran lagi', '');
 
         return response([
             'status' => 'success',
@@ -110,11 +117,9 @@ class PaymentController extends Controller
                 'message' => 'Payment not found',
             ], 404);
         }
-        $response = Http::withHeaders([
-            'Authorization' => 'Basic ' . base64_encode(env("XENDIT_SECRET_KEY") . ':'),
-        ])->get('https://api.xendit.co/v2/invoices/' . $payment->invoice_id);
+        $response = $this->XenditService->getInvoice($payment->invoice_id);
 
-        $payment->status = strtolower(json_decode($response->body(), true)['status']);
+        $payment->status = strtolower($response['status']);
         $payment->save();
 
         return response([
@@ -134,6 +139,7 @@ class PaymentController extends Controller
             ], 404);
         }
         $payment->status = strtolower($request->status);
+        $payment->save();
         return response([
             'status' => 'success',
             'message' => 'Payment status updated',
