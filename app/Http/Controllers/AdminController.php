@@ -39,6 +39,12 @@ class AdminController extends Controller
                 'message' => 'Email already exists',
             ], 409);
         }
+        $user = Admin::where('phone', $request->phone)->first();
+        if ($user != null) {
+            return response([
+                'message' => 'Phone already exists',
+            ], 409);
+        }
         $userdata = [
             'username' => $request->username,
             'email' => $request->email,

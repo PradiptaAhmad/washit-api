@@ -72,6 +72,10 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/ban', [BannedUserController::class, 'banUser']);
         Route::delete('/unban/{id}', [BannedUserController::class, 'unBanUser']);
     });
+
+    Route::group(['prefix' => 'orders', 'middleware' => 'auth:admin'], function () {
+        Route::put('/update-weight', [OrderController::class, 'updateWeight']);
+    });
 });
 
 Route::group(['prefix' => '/histories', 'middleware' => 'auth:user'], function () {

@@ -161,4 +161,28 @@ class OrderController extends Controller
         ], 201);
     }
 
+    // Admin Order Controller
+    public function updateWeight(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer',
+            'berat_laundry' => 'required|integer',
+        ]);
+        $order = Order::where('id', $request->id)->first();
+        if ($order == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Order Not Found'
+            ], 301);
+        }
+        $totalPrice = $order->laundry->harga * $request->berat_laundry;
+        $order->berat_laundry = $request->berat_laundry;
+        $order->total_harga = $totalPrice;
+        $order->save();
+        return response([
+            'status' => 'success',
+            'message' => 'Order Weight Updated Successfully',
+        ], 201);
+    }
+
 }
