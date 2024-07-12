@@ -24,7 +24,7 @@ class AdminController extends Controller
                 'message' => 'Invalid credentials',
             ], 401);
         }
-        $token = $user->createToken('admin_washit')->accessToken;
+        $token = $user->createToken('admin_washit', ['admin'])->accessToken;
         return response([
             'user' => $user,
             'token' => $token,
@@ -39,6 +39,12 @@ class AdminController extends Controller
                 'message' => 'Email already exists',
             ], 409);
         }
+        $user = Admin::where('phone', $request->phone)->first();
+        if ($user != null) {
+            return response([
+                'message' => 'Phone already exists',
+            ], 409);
+        }
         $userdata = [
             'username' => $request->username,
             'email' => $request->email,
@@ -46,7 +52,7 @@ class AdminController extends Controller
             'password' => Hash::make($request->password),
         ];
         $user = Admin::create($userdata);
-        $token = $user->createToken('admin_washit')->accessToken;
+        $token = $user->createToken('admin_washit', ['admin'])->accessToken;
         return response([
             'admin' => $user,
             'token' => $token,

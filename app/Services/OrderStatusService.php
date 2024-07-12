@@ -35,17 +35,17 @@ class OrderStatusService
             if($order->jenis_pemesanan == 'antar_jemput')
             {
                 $this->createOrderStatus($id, 'success', '1', 'Pesanan telah dikonfirmasi');
-                $this->firebaseService->sendNotification($order->user->device_token, 'Pesanan telah terkonfirmasi', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Telah dikonfirmasi', '');
+                $this->firebaseService->sendNotification($order->user->notification_token, 'Pesanan telah terkonfirmasi', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Telah dikonfirmasi', '');
 
                 $this->createOrderStatus($id, 'pending', '2', 'Menunggu Penjemputan');
-                $this->firebaseService->sendNotification($order->user->device_token, 'Menunggu Penjemputan', 'Kami akan mengambil pesananmu', '');
+                $this->firebaseService->sendNotification($order->user->notification_token, 'Menunggu Penjemputan', 'Kami akan mengambil pesananmu', '');
 
 
             }
             if ($order->jenis_pemesanan == 'antar_mandiri')
             {
                 $this->createOrderStatus($id, 'pending', '2', 'Menunggu Konfirmasi');
-                $this->firebaseService->sendNotification($order->user->device_token, 'Menunggu Konfirmasi', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Telah dikonfirmasi', '');
+                $this->firebaseService->sendNotification($order->user->notification_token, 'Menunggu Konfirmasi', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Telah dikonfirmasi', '');
             }
 
         }
@@ -53,7 +53,7 @@ class OrderStatusService
             if($order->jenis_pemesanan == 'antar_jemput')
             {
                 $this->createOrderStatus($id, 'success', '2', 'Pesanan telah dipickup');
-                $this->firebaseService->sendNotification($order->user->device_token, 'Pesananmu telah di pickup', 'Kami telah mengambil pesananmu semoga sehat selalu', '');
+                $this->firebaseService->sendNotification($order->user->notification_token, 'Pesananmu telah di pickup', 'Kami telah mengambil pesananmu semoga sehat selalu', '');
                 $this->createOrderStatus($id, 'pending', '3', 'Sedang diproses');
             }
             if($order->jenis_pemesanan == 'antar_mandiri')
@@ -87,6 +87,10 @@ class OrderStatusService
             if ($order->jenis_pemesanan == 'antar_mandiri') {
                 if ($order->payment_method == 'cashless') {
                     $this->createOrderStatus($id, 'success', '4', 'Pembayaran Berhasil');
+                    $this->createOrderStatus($id, 'pending', '4', 'Menunggu Pengambilan');
+                }
+                if ($order->payment_method == 'cash') {
+                    $this->createOrderStatus($id, 'success', '4', 'Mohon Sediakan Uang Pas');
                     $this->createOrderStatus($id, 'pending', '4', 'Menunggu Pengambilan');
                 }
             }
