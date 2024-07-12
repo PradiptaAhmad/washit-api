@@ -24,7 +24,7 @@ class AdminController extends Controller
                 'message' => 'Invalid credentials',
             ], 401);
         }
-        $token = $user->createToken('admin_washit')->accessToken;
+        $token = $user->createToken('admin_washit', ['admin'])->accessToken;
         return response([
             'user' => $user,
             'token' => $token,
@@ -52,7 +52,7 @@ class AdminController extends Controller
             'password' => Hash::make($request->password),
         ];
         $user = Admin::create($userdata);
-        $token = $user->createToken('admin_washit')->accessToken;
+        $token = $user->createToken('admin_washit', ['admin'])->accessToken;
         return response([
             'admin' => $user,
             'token' => $token,

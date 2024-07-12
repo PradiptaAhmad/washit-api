@@ -36,7 +36,7 @@ class UserController extends Controller
             'notification_token' => $request->notification_token,
         ];
         $user = User::create($userdata);
-        $token = $user->createToken('wash_it')->accessToken;
+        $token = $user->createToken('wash_it', ['user'])->accessToken;
 
         return response([
             'user' => $user,
@@ -63,7 +63,7 @@ class UserController extends Controller
                 'unbanned_at' => $bannedUser->unbanned_at,
             ], 401);
         }
-        $token = $user->createToken('wash_it')->accessToken;
+        $token = $user->createToken('wash_it', ['user'])->accessToken;
         $user->notification_token = $request->notification_token;
         $user->save();
 

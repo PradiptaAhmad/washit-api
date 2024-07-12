@@ -23,5 +23,10 @@ class AppServiceProvider extends ServiceProvider
     {
         config(['app.locale' => 'id']);
         Carbon::setLocale('id');
+        Passport:;
+        Passport::tokensCan([
+            'admin' => 'Admin Login',
+            'user' => 'User Login',
+        ]);
     }
 }

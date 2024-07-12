@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\OrderRequest;
+use App\Http\Resources\OrderResource;
 use App\Models\Admin;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\User;
 use App\Services\FirebaseService;
+use App\Services\OrderStatusService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +19,7 @@ class OrderController extends Controller
     protected $firebaseService;
     protected $updateStatusService;
 
-    public function __construct(FirebaseService $firebaseService, OrderStatus $updateStatusService)
+    public function __construct(FirebaseService $firebaseService, OrderStatusService $updateStatusService)
     {
         $this->firebaseService = $firebaseService;
         $this->updateStatusService = $updateStatusService;
@@ -58,12 +60,9 @@ class OrderController extends Controller
                 'message' => 'Order is empty',
             ], 200);
         }
-
-        $orderArray =  $order->toArray();
-        $orderArray['status'] = $order->status;
         return response([
             'message' => 'Order fetched successfully',
-            'order' => $orderArray,
+            'order' => OrderResource::collection($order),
         ], 200);
     }
 
