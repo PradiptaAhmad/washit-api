@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Database\Factories\MultiClientPersonalAccessTokenFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
@@ -11,6 +13,7 @@ class User extends Authenticatable
 {
     use Notifiable, HasApiTokens;
 
+    protected $guard = 'user';
     /**
      * The attributes that are mass assignable.
      *
@@ -24,13 +27,14 @@ class User extends Authenticatable
         'password',
     ];
 
+
     /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
      */
     protected $hidden = [
-        // 'notification_token',
+        'notification_token',
         'password',
         'remember_token',
     ];
