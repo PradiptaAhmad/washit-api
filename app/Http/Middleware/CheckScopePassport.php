@@ -42,9 +42,7 @@ class CheckScopePassport
 
         foreach ($scopes as $scope) {
             if (!$request->user()->tokenCan($scope)) {
-                return response([
-                    'message' => 'You are not authorized to access this resource.',
-                ], 401);
+                throw new AuthenticationException();
             }
         }
 

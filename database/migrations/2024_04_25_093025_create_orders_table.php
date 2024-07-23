@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string("nama_pemesan");
             $table->string("nomor_telepon");
             $table->string("alamat")->nullable();
+            $table->string("metode_pembayaran")->default("tunai");
             $table->integer("berat_laundry")->nullable();
             $table->integer("total_harga")->nullable();
             $table->timestamp("tanggal_pemesanan")->nullable();

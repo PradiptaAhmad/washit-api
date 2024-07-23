@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\OrderRequest;
+use App\Http\Resources\OrderAdminDetailResource;
 use App\Http\Resources\OrderResource;
 use App\Models\Admin;
 use App\Models\Order;
@@ -39,13 +40,15 @@ class OrderController extends Controller
             'nomor_telepon' => $request->nomor_telepon,
             'jenis_pemesanan' => $request->jenis_pemesanan,
             'alamat' => $request->alamat,
+            'metode_pembayaran' => $request->metode_pembayaran,
             'tanggal_pemesanan' => $tanggal_pemesanan,
             'tanggal_pengambilan' => $request->tanggal_pengambilan,
             'laundry_id' => $request->laundry_id,
             'user_id' => $user->id,
         ]);
-        return response([
-            'message' => 'Order added successfully',
+        $this->updateStatusService->updateStatus($order->id);
+        $this->firebaseService->sendNotification($user->notification_token, 'Pesanan Telah Dibuat', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Menunggu Konfirmasi', '');
+        return response(['message' => 'Order created successfully',
             'order' => $order,
         ], 201);
     }
@@ -182,6 +185,54 @@ class OrderController extends Controller
             'status' => 'success',
             'message' => 'Order Weight Updated Successfully',
         ], 201);
+    }
+
+    public function getAllOrders()
+    {
+        $orders = Order::all();
+        return response([
+            'status' => 'success',
+            'message' => 'All Orders Fetched Successfully',
+            'orders' => OrderResource::collection($orders),
+        ], 200);
+    }
+
+    public function cancelOrder(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|integer',
+        ]);
+        $order = Order::where('id', $request->order_id)->first();
+        if ($order == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Order Not Found'
+            ], 301);
+        }
+        $status = $this->updateStatusService->cancelOrder($request->order_id);
+        if ($status == false) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Order Already Canceled'
+            ], 301);
+        }
+        return response([
+            'status' => 'success',
+            'message' => 'Order Canceled Successfully',
+        ]);
+    }
+
+    public function getAdminDetailOrder(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|integer|exists:orders,id',
+        ]);
+        $order = Order::where('id', $request->order_id)->first();
+        return response([
+            'status' => 'success',
+            'message' => 'Order Detail Fetched Successfully',
+            'order' => new OrderAdminDetailResource($order),
+        ], 200);
     }
 
 }
