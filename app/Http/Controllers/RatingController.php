@@ -68,12 +68,9 @@ class RatingController extends Controller
         ], 200);
     }
 
-    public function getSummaryRating(Request $request)
+    public function getRatingSummary()
     {
-        $request->validate([
-            'order_id' => 'required|integer|exists:orders,id',
-        ]);
-        $rating = Rating::where('order_id', $request->order_id)->get();
+        $rating = Rating::all();
         if ($rating == null) {
             return response([
                 'status' => 'failed',
