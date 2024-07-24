@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrderAdminDetailResource;
 use App\Http\Resources\OrderResource;
+use App\Http\Resources\UserOrderDetailResource;
 use App\Models\Admin;
 use App\Models\Order;
 use App\Models\OrderStatus;
@@ -66,6 +67,18 @@ class OrderController extends Controller
         return response([
             'message' => 'Order fetched successfully',
             'order' => OrderResource::collection($order),
+        ], 200);
+    }
+
+    public function getOrderDetail(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|integer|exists:orders,id',
+        ]);
+        $order = Order::where('id', $request->order_id)->first();
+        return response([
+            'message' => 'Order Detail Fetched Successfully',
+            'order' => new UserOrderDetailResource($order),
         ], 200);
     }
 
