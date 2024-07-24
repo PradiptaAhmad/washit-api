@@ -60,13 +60,14 @@ Route::group(['prefix' => 'orders', 'middleware' => ['auth:user', 'scope:user']]
     });
 });
 
+Route::get('/laundry/all', [LaundryController::class, 'getLaundryServices'])->middleware(['auth:user', 'scope:user']);
+
 Route::group(['prefix' => 'admin'], function () {
     Route::group(['prefix' => 'accounts'], function () {
         Route::post('/login', [AdminController::class, 'login']);
         Route::post('/register', [AdminController::class, 'register']);
         Route::get('/details', [AdminController::class, 'adminDetails'])->middleware(['auth:admin', 'scope:admin']);
         Route::post('/logout', [AdminController::class, 'logout'])->middleware(['auth:admin', 'scope:admin']);
-        Route::get('/all', [LaundryController::class, 'getLaundryServices'])->middleware(['auth:user', 'scope:admin']);
     });
 
     Route::middleware(['auth:admin', 'scope:admin'],)->group(function () {
