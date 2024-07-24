@@ -68,5 +68,48 @@ class RatingController extends Controller
         ], 200);
     }
 
-    
+    public function getSummaryRating(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|integer|exists:orders,id',
+        ]);
+        $rating = Rating::where('order_id', $request->order_id)->get();
+        if ($rating == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Rating not found',
+            ], 404);
+        }
+        $totalRating = 0;
+        $totalReview = 0;
+        foreach ($rating as $r) {
+            $totalRating += $r->rating;
+            $totalReview++;
+        }
+        $averageRating = $totalRating / $totalReview;
+        return response([
+            'status' => 'success',
+            'message' => 'Get summary rating successfully',
+            'average_rating' => $averageRating,
+            'total_review' => $totalReview,
+        ], 200);
+    }
+
+
+    public function getAllRating()
+    {
+        $rating = Rating::all();
+        if ($rating == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Rating is empty',
+            ], 404);
+        }
+        return response([
+            'status' => 'success',
+            'message' => 'Get all rating successfully',
+            'rating' => $rating,
+        ], 200);
+    }
+
 }

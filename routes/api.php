@@ -44,6 +44,7 @@ Route::group(['prefix' => 'orders', 'middleware' => ['auth:user', 'scope:user']]
     Route::get('/all', [OrderController::class, 'getOrder']);
     Route::delete('/delete/{id}', [OrderController::class, 'deleteOrder']);
     Route::post('/update', [OrderController::class, 'updateStatus']);
+    Route::get('/detail', [OrderController::class, 'getOrderDetail']);
 
     Route::group(['prefix' => '/update'], function () {
         Route::post('/status', [OrderController::class, 'updateStatus']);
@@ -89,6 +90,12 @@ Route::group(['prefix' => 'admin'], function () {
             Route::put('/update-weight', [OrderController::class, 'updateWeight']);
             Route::put('/status/update', [OrderStatusController::class, 'updateOrderStatus']);
         });
+
+        Route::group(['prefix' => 'ratings'], function () {
+            Route::get('/all', [RatingController::class, 'getAllRatings']);
+            Route::get('/summary', [RatingController::class, 'getRatingSummary']);
+            Route::delete('/delete/{id}', [RatingController::class, 'deleteRating']);
+        });
     });
 });
 
@@ -119,5 +126,5 @@ Route::group(['prefix' => 'payments'], function () {
 Route::group(['prefix' => 'ratings', 'middleware' => ['auth:user', 'scope:user']], function () {
     Route::post('/add', [RatingController::class, 'addRating']);
     Route::get('/get', [RatingController::class, 'getRating']);
-    Route::delete('/delete/{id}', [RatingController::class, 'deleteRating']);
+
 });
