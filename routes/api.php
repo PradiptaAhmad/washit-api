@@ -1,16 +1,17 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\BannedUserController;
-use App\Http\Controllers\HistoryController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\LaundryController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\OrderStatusController;
-use App\Http\Controllers\OtpController;
-use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OtpController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\RatingController;
+use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\LaundryController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\BannedUserController;
+use App\Http\Controllers\OrderStatusController;
+use App\Http\Controllers\NotificationController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -113,4 +114,10 @@ Route::group(['prefix' => 'payments'], function () {
     Route::group(['prefix' => 'callback', 'middleware' => 'xendit-callback'], function () {
         Route::post('/invoice-status', [PaymentController::class, 'invoiceStatus']);
     });
+});
+
+Route::group(['prefix' => 'ratings', 'middleware' => ['auth:user', 'scope:user']], function () {
+    Route::post('/add', [RatingController::class, 'addRating']);
+    Route::get('/get', [RatingController::class, 'getRating']);
+    Route::delete('/delete/{id}', [RatingController::class, 'deleteRating']);
 });

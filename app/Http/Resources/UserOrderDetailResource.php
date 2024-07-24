@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class OrderAdminDetailResource extends JsonResource
+class UserOrderDetailResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -27,7 +27,6 @@ class OrderAdminDetailResource extends JsonResource
             'tanggal_pemesanan' => $this->tanggal_pemesanan,
             'tanggal_pengambilan' => $this->tanggal_pengambilan,
             'laundry_service' => optional($this->laundry)->first()->only(['id', 'nama_laundry',]),
-            'user' => optional($this->user)->first()->only(['id', 'username', 'email', 'phone']),
         ];
     }
 }
