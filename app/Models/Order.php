@@ -24,6 +24,11 @@ class Order extends Model
         'user_id'
     ];
 
+    protected $casts = [
+        'total_harga' => 'integer',
+        'berat_laundry' => 'integer'
+    ];
+
     public function user() {
         return $this->belongsTo(User::class);
     }
