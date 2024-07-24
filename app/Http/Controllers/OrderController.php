@@ -248,4 +248,36 @@ class OrderController extends Controller
         ], 200);
     }
 
+    public function getChartData()
+    {
+        $today = Carbon::today();
+        $lastMonth = $today->copy()->subDays(30);
+
+        $data = Order::selectRaw('DATE(created_at) as date, COUNT(*) as total')
+            ->whereBetween('created_at', [$lastMonth->format('Y-m-d'), $today->format('Y-m-d')])
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->get();
+        dd($data);
+        $dates = [];
+        $currentDate = $lastMonth->copy();
+        while ($currentDate->lte($today)) {
+            $dates[$currentDate->format('Y-m-d')] = 0;
+            $currentDate->addDay();
+        }
+
+        foreach ($data as $entry) {
+            $dates[$entry->date] = $entry->total;
+        }
+
+        $formattedData = collect($dates)->map(function ($total, $date) {
+            return [
+                'date' => $date,
+                'total' => $total
+            ];
+        })->values();
+
+        return response()->json($formattedData);
+    }
+
 }

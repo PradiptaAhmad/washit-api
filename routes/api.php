@@ -66,7 +66,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/register', [AdminController::class, 'register']);
         Route::get('/details', [AdminController::class, 'adminDetails'])->middleware(['auth:admin', 'scope:admin']);
         Route::post('/logout', [AdminController::class, 'logout'])->middleware(['auth:admin', 'scope:admin']);
-
+        Route::get('/all', [LaundryController::class, 'getLaundryServices'])->middleware(['auth:user', 'scope:admin']);
     });
 
     Route::middleware(['auth:admin', 'scope:admin'],)->group(function () {
@@ -74,7 +74,6 @@ Route::group(['prefix' => 'admin'], function () {
             Route::post('/add', [LaundryController::class, 'addLaundryServices']);
             Route::post('/update-price', [LaundryController::class, 'updatePrice']);
             Route::delete('/delete/{id}', [LaundryController::class, 'deleteLaundryService']);
-            Route::get('/all', [LaundryController::class, 'getLaundryServices']);
         });
 
         Route::group(['prefix' => 'users'], function () {
@@ -86,6 +85,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::group(['prefix' => 'orders'], function () {
             Route::get('/all', [OrderController::class, 'getAllOrders']);
             Route::get('/detail', [OrderController::class, 'getAdminDetailOrder']);
+            Route::get('/chart', [OrderController::class, 'getChartData']);
             Route::put('/cancel', [OrderController::class, 'cancelOrder']);
             Route::put('/update-weight', [OrderController::class, 'updateWeight']);
             Route::put('/status/update', [OrderStatusController::class, 'updateOrderStatus']);
