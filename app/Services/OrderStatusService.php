@@ -31,7 +31,7 @@ class OrderStatusService
 
     public function updateStatus($id) {
         $order = Order::where('id', $id)->first();
-        $orderStatus = OrderStatus::where('order_id', $id)->orderBy('created_at', 'desc')->first();
+        $orderStatus = OrderStatus::where('order_id', $id)->latest()->first();
 
         if ($orderStatus == null) {
             $this->createOrderStatus($id, 'success', '0', 'Pesanan Telah Dibuat');
@@ -66,14 +66,15 @@ class OrderStatusService
             if($order->jenis_pemesanan == 'antar_jemput')
             {
                 $this->createOrderStatus($id, 'success', '2', 'Pesanan telah dipickup');
-                $this->createOrderStatus($id, 'pending', '3', 'Sedang diproses');
-
                 $this->firebaseService->sendNotification($order->user->notification_token, 'Pesananmu telah di pickup', 'Kami telah mengambil pesananmu semoga sehat selalu', '');
+
+                $this->createOrderStatus($id, 'pending', '3', 'Sedang diproses');
                 return;
             }
             if($order->jenis_pemesanan == 'antar_mandiri')
             {
                 $this->createOrderStatus($id, 'success', '2', 'Pesanan telah diterima');
+                $this->firebaseService->sendNotification($order->user->notification_token, 'Pesananmu telah diterima', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Telah diterima', '');
                 $this->createOrderStatus($id, 'pending', '3', 'Sedang diproses');
                 return;
             }
@@ -82,18 +83,21 @@ class OrderStatusService
         {
             if ($order->jenis_pemesanan == 'antar_jemput') {
                 $this->createOrderStatus($id, 'success', '3', 'Pesanan selesai diproses');
+                $this->firebaseService->sendNotification($order->user->notification_token, 'Pesananmu sudah selesai diproses', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Selesai Diproses, Menunggu Pembayaran', '');
                 $this->createOrderStatus($id, 'pending', '4', 'Menunggu Pembayaran');
                 return;
             }
             if ($order->jenis_pemesanan == 'antar_mandiri') {
                 $this->createOrderStatus($id, 'success', '3', 'Pesanan selesai diproses');
-                return;
+                $this->firebaseService->sendNotification($order->user->notification_token, 'Pesananmu sudah selesai diproses', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Selesai Diproses', '');
                 if($order->payment_method == 'cashless') {
                     $this->createOrderStatus($id, 'pending', '4', 'Menunggu Pembayaran');
+                    $this->firebaseService->sendNotification($order->user->notification_token, 'Menunggu Pembayaran', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Selesai Diproses, Menunggu Pembayaran', '');
                     return;
                 }
                 if($order->payment_method == 'cash') {
                     $this->createOrderStatus($id, 'pending', '4', 'Menunggu Pengambilan');
+                    $this->firebaseService->sendNotification($order->user->notification_token, 'Pesananmu sudah selesai diproses', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Selesai Diproses, Menunggu Diambil', '');
                     return;
                 }
 
@@ -101,12 +105,12 @@ class OrderStatusService
         }
         if ($orderStatus == 4) {
             if ($order->jenis_pemesanan == 'antar_jemput') {
-                if ($this->checkPayment($id)) {
+                if (!$this->checkPayment($id)) {
                     return;
                 }
                 $this->createOrderStatus($id, 'success', '4', 'Pembayaran Berhasil');
-                $this->createOrderStatus($id, 'pending', '5', 'Sedang diantar menuju alamat');
                 $this->firebaseService->sendNotification($order->user->notification_token, 'Pembayaran berhasil', 'Pesananmu nomor ' . $order->no_pemesanan . ' akan segera kami antar ke lokasi ', '');
+                $this->createOrderStatus($id, 'pending', '5', 'Sedang diantar menuju alamat');
                 return;
             }
             if ($order->jenis_pemesanan == 'antar_mandiri') {
@@ -115,16 +119,31 @@ class OrderStatusService
                         return;
                     }
                     $this->createOrderStatus($id, 'success', '4', 'Pembayaran Berhasil');
-                    $this->createOrderStatus($id, 'pending', '5', 'Menunggu Pengambilan');
                     $this->firebaseService->sendNotification($order->user->notification_token, 'Pembayaran berhasil', 'Pesananmu nomor ' . $order->no_pemesanan . ' bisa segera diambil ', '');
+                    $this->createOrderStatus($id, 'pending', '5', 'Menunggu Pengambilan');
                     return;
                 }
                 if ($order->metode_pembayaran == 'tunai') {
                     $this->createOrderStatus($id, 'success', '4', 'Pembayaran dilakukan secara tunai');
-                    $this->createOrderStatus($id, 'pending', '5', 'Menunggu Pengambilan');
                     $this->firebaseService->sendNotification($order->user->notification_token, 'Pesanan telah selesai dan bisa diambil', 'Pesananmu nomor ' . $order->no_pemesanan . ' bisa segera diambil ', '');
+                    $this->createOrderStatus($id, 'pending', '5', 'Menunggu Pengambilan');
+
                     return;
                 }
+            }
+        }
+        if ($orderStatus == 5) {
+            if ($order->jenis_pemesanan == 'antar_jemput') {
+                $this->createOrderStatus($id, 'success', '5', 'Pesanan telah diantar');
+                $order->status = 'completed';
+                $order->save();
+                $this->firebaseService->sendNotification($order->user->notification_token, 'Laundrymu sudah sampai', 'Pesananmu nomor ' . $order->no_pemesanan . ' sudah diantar ke alamat ', '');
+                return;
+            }
+            if ($order->jenis_pemesanan == 'antar_mandiri') {
+                $this->createOrderStatus($id, 'success', '5', 'Pesanan telah selesai');
+                $this->firebaseService->sendNotification($order->user->notification_token, 'Laundrymu sudah selesai', 'Pesananmu nomor ' . $order->no_pemesanan . ' sudah diantar ke alamat ', '');
+                return;
             }
         }
     }
@@ -136,6 +155,9 @@ class OrderStatusService
         if ($orderStatus != null && $orderStatus->status_code == '99') {
             return false;
         }
+        $order->status = 'canceled';
+        $order->save();
+
         $this->createOrderStatus($id, 'failed', '99', 'Pesanan Dibatalkan');
         $this->firebaseService->sendNotification($order->user->notification_token, 'Pesanan Dibatalkan', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Telah dibatalkan', '');
         return true;

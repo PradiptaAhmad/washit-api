@@ -50,6 +50,7 @@ class AdminController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
+            'notification_token' => $request->notification_token,
         ];
         $user = Admin::create($userdata);
         $token = $user->createToken('admin_washit', ['admin'])->accessToken;

@@ -51,21 +51,14 @@ Route::group(['prefix' => 'users'], function () {
 Route::group(['prefix' => 'orders', 'middleware' => ['auth:user', 'scope:user']], function () {
     Route::post('/new', [OrderController::class, 'addOrder']);
     Route::get('/all', [OrderController::class, 'getOrder']);
-    Route::delete('/delete/{id}', [OrderController::class, 'deleteOrder']);
     Route::post('/update', [OrderController::class, 'updateStatus']);
     Route::get('/detail', [OrderController::class, 'getOrderDetail']);
-
-    Route::group(['prefix' => '/update'], function () {
-        Route::post('/status', [OrderController::class, 'updateStatus']);
-        Route::get('/all', [OrderController::class, 'getStatus']);
-        Route::post('/add', [OrderController::class, 'addStatus']);
-        Route::delete('/delete/{id}', [OrderController::class, 'deleteStatus']);
-    });
+    Route::put('/complete', [OrderController::class, 'completeOrder']);
+    Route::delete('/delete/{id}', [OrderController::class, 'deleteOrder']);
 
     Route::group(['prefix' => '/status'], function () {
         Route::get('/all', [OrderStatusController::class, 'getOrderStatus']);
         Route::get('/last', [OrderStatusController::class, 'getLastStatus']);
-        Route::delete('/delete/{id}', [OrderStatusController::class, 'deleteStatus']);
     });
 });
 
@@ -82,7 +75,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::middleware(['auth:admin', 'scope:admin'],)->group(function () {
         Route::group(['prefix' => '/laundry'], function () {
             Route::post('/add', [LaundryController::class, 'addLaundryServices']);
-            Route::post('/update-price', [LaundryController::class, 'updatePrice']);
+            Route::put('/update', [LaundryController::class, 'updateLaundry']);
             Route::delete('/delete/{id}', [LaundryController::class, 'deleteLaundryService']);
         });
 
@@ -99,6 +92,7 @@ Route::group(['prefix' => 'admin'], function () {
             Route::put('/cancel', [OrderController::class, 'cancelOrder']);
             Route::put('/update-weight', [OrderController::class, 'updateWeight']);
             Route::put('/status/update', [OrderStatusController::class, 'updateOrderStatus']);
+            Route::delete('/status/delete/{id}', [OrderStatusController::class, 'deleteStatus']);
         });
 
         Route::group(['prefix' => 'ratings'], function () {
