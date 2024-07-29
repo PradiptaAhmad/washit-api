@@ -118,6 +118,19 @@ class OtpController extends Controller
         Mail::send('email.mail', ['otp' => $otp, "description" => $description, 'username' => $user->username], function ($message) use ($user) {
             $message->to($user->email, $user->username)->subject('OTP Verification');
         });
+
+        if ($user->email_verified_at != null) {
+            return response([
+                "status" => "failed",
+                'message' => "Email Address Verified"
+            ]);
+        }
+
+        Otp::create([
+            "otp" => $otp,
+            "user_id" => $user->id,
+        ]);
+
         return response([
             "status" => "success",
             'message' => 'OTP sent successfully',
