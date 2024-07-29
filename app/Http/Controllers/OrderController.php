@@ -35,7 +35,8 @@ class OrderController extends Controller
         $date = date('YmdHis');
         $nomor_pemesanan = $user->id . $request->laundry_id . $date;
         $laundry = Laundry::where('id', $request->laundry_id)->first();
-        $estimatedDate = Carbon::now()->addDays($laundry->estimasi_waktu);
+        $estimasi = $laundry->estimasi_waktu;
+        $estimatedDate = Carbon::now()->addDays($estimasi);
 
         $order = Order::create([
             'no_pemesanan' => $nomor_pemesanan,

@@ -10,4 +10,9 @@ class Laundry extends Model
     use HasFactory;
 
     protected $fillable = ['nama_laundry', 'harga', 'estimasi_waktu'];
+    protected $casts = [
+        'nama_laundry' => 'string',
+        'harga' => 'integer',
+        'estimasi_waktu' => 'integer'
+    ];
 }
