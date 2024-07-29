@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->integer('user_id')->nullable();
             $table->timestamps();
+
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
         });
     }
 

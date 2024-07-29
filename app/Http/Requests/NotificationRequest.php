@@ -24,7 +24,7 @@ class NotificationRequest extends FormRequest
         return [
             'title' => 'required|string',
             'body' => 'required|string',
-            'user_id' => 'required|id',
+            'user_id' => 'required|integer|exists:users,id',
         ];
     }
 }
