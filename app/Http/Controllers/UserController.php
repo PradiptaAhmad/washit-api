@@ -238,7 +238,7 @@ class UserController extends Controller
             'message' => 'OTP sent to your email, check your email address',
         ]);
     }
- 
+
     public function verifyForgotPassword(Request $request)
     {
         $request->validate([

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->enum('payment_type', ['tunai', 'non_tunai'])->default('non_tunai');
             $table->string('external_id')->nullable();
             $table->string('payment_method')->nullable();
             $table->string('status')->nullable();

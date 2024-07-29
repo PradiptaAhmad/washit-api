@@ -23,6 +23,7 @@ class AddLaundryRequest extends FormRequest
     {
         return [
             'nama_laundry' => 'required|string',
+            'deskripsi' => 'required|string',
             'harga' => 'required|integer',
             'estimasi_waktu' => 'required|integer'
         ];

@@ -14,6 +14,7 @@ class LaundryController extends Controller
         $request->validated();
         $laundry = Laundry::create([
             'nama_laundry' => $request->nama_laundry,
+            'deskripsi' => $request->deskripsi,
             'harga' => $request->harga,
             'estimasi_waktu' => $request->estimasi_waktu,
         ]);
@@ -24,23 +25,20 @@ class LaundryController extends Controller
         ], 201);
     }
 
-    public function updatePrice(Request $request)
+    public function updateLaundry(Request $request)
     {
-        $request->validate([
-            'id' => 'required|integer',
-            'harga' => 'required|integer',
+        $request->validate(['laundry_id' => 'required|integer|exists:laundries,id',
         ]);
-        $laundry = Laundry::where('id', $request->id)->first();
-        if ($laundry == null) {
-            return response([
-                'message' => 'Laundry service not found',
-            ], 404);
-        }
+        $laundry = Laundry::where('id', $request->laundry_id)->first();
         $laundry->update([
+            'nama_laundry' => $request->nama_laundry,
+            'deskripsi' => $request->deskripsi,
             'harga' => $request->harga,
+            'estimasi_waktu' => $request->estimasi_waktu,
         ]);
         return response([
-            'message' => 'Price updated successfully',
+            'status' => 'success',
+            'message' => 'Laundry data updated successfully',
             'laundry' => $laundry,
         ], 200);
     }

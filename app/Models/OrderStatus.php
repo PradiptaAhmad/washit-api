@@ -15,4 +15,11 @@ class OrderStatus extends Model
         'status_description',
         'order_id'
     ];
+
+    protected $casts = [
+        'status' => 'string',
+        'status_code' => 'integer',
+        'status_description' => 'string',
+        'order_id' => 'integer'
+    ];
 }

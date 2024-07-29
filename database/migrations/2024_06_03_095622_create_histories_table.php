@@ -18,15 +18,18 @@ return new class extends Migration
             $table->string("nama_pemesan");
             $table->string("nomor_telepon");
             $table->string("alamat")->nullable();
+            $table->string("metode_pembayaran")->default("tunai");
             $table->integer("berat_laundry")->nullable();
             $table->integer("total_harga")->nullable();
-            $table->string('payment_method')->default('cashless');
-            $table->timestamp("tanggal_pemesanan")->nullable();
-            $table->datetime("tanggal_pengambilan")->nullable();
-            $table->unsignedBigInteger("laundry_id")->nullable();
-            $table->unsignedBigInteger("user_id")->nullable();
-            $table->unsignedBigInteger("trasanction_id");
+            $table->enum('status', ['process', 'completed', 'canceled'])->default('process');
+            $table->timestamp("tanggal_pengambilan")->nullable();
+            $table->timestamp('tanggal_estimasi')->nullable();
+            $table->unsignedBigInteger("laundry_id")->default(0);
+            $table->unsignedBigInteger("user_id")->default(0);
             $table->timestamps();
+
+            $table->foreign("laundry_id")->references("id")->on("laundries")->onDelete("cascade");
+            $table->foreign("user_id")->references("id")->on("users")->onDelete("cascade");
         });
     }
 
@@ -35,6 +38,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('histories', function (Blueprint $table) {
+            $table->dropForeign(["laundry_id"]);
+            $table->dropForeign(["user_id"]);
+        }); 
         Schema::dropIfExists('histories');
     }
 };

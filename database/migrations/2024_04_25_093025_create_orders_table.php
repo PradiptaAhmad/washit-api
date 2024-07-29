@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string("metode_pembayaran")->default("tunai");
             $table->integer("berat_laundry")->nullable();
             $table->integer("total_harga")->nullable();
+            $table->enum('status', ['process', 'completed', 'canceled'])->default('process');
             $table->timestamp("tanggal_pengambilan")->nullable();
             $table->timestamp('tanggal_estimasi')->nullable();
             $table->unsignedBigInteger("laundry_id")->default(0);

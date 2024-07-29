@@ -7,6 +7,7 @@ use App\Http\Resources\OrderAdminDetailResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\UserOrderDetailResource;
 use App\Models\Admin;
+use App\Models\History;
 use App\Models\Laundry;
 use App\Models\Order;
 use App\Models\OrderStatus;
@@ -51,8 +52,9 @@ class OrderController extends Controller
             'user_id' => $user->id,
         ]);
         $this->updateStatusService->updateStatus($order->id);
-        $this->firebaseService->sendNotification($user->notification_token, 'Pesanan Telah Dibuat', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Menunggu Konfirmasi', '');
-        return response(['message' => 'Order created successfully',
+        return response([
+            'status' => 'success',
+            'message' => 'Order created successfully',
             'order' => $order,
         ], 201);
     }
@@ -281,6 +283,35 @@ class OrderController extends Controller
         })->values();
 
         return response()->json($formattedData);
+    }
+
+    public function completeOrder(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|integer|exists:orders,id',
+        ]);
+        $order = Order::where('id', $request->order_id)->first();
+        History::create($order->only([
+            'no_pemesanan',
+            'jenis_pemesanan',
+            'nama_pemesan',
+            'nomor_telepon',
+            'alamat',
+            'metode_pembayaran',
+            'berat_laundry',
+            'total_harga',
+            'status',
+            'tanggal_pengambilan',
+            'tanggal_estimasi',
+            'laundry_id',
+            'user_id',
+        ]));
+        $order->delete();
+
+        return response([
+            'status' => 'success',
+            'message' => 'Order Completed Successfully',
+        ]);
     }
 
 }
