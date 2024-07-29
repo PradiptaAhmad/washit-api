@@ -18,8 +18,8 @@ class Order extends Model
         'berat_laundry',
         'total_harga',
         'status',
-        'tanggal_pemesanan',
         'tanggal_pengambilan',
+        'tanggal_estimasi',
         'laundry_id',
         'user_id'
     ];

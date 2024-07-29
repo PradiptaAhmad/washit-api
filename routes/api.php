@@ -35,7 +35,8 @@ Route::group(['prefix' => 'users'], function () {
         });
 
         Route::group(['prefix' => 'otp',], function () {
-            Route::post('/send', [OtpController::class, 'sendOtp']);
+            Route::post('/send/phone', [OtpController::class, 'sendOtp']);
+            Route::post('/send/email', [OtpController::class, 'sendEmailOtp']);
             Route::post('/verify/phone', [OtpController::class, 'verifyOtp']);
             Route::post('/verify/email', [OtpController::class, 'verifyEmailOtp']);
         });

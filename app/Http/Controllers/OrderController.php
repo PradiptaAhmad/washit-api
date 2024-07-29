@@ -7,6 +7,7 @@ use App\Http\Resources\OrderAdminDetailResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\UserOrderDetailResource;
 use App\Models\Admin;
+use App\Models\Laundry;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\User;
@@ -33,7 +34,8 @@ class OrderController extends Controller
 
         $date = date('YmdHis');
         $nomor_pemesanan = $user->id . $request->laundry_id . $date;
-        $tanggal_pemesanan = Carbon::now();
+        $laundry = Laundry::where('id', $request->laundry_id)->first();
+        $estimatedDate = Carbon::now()->addDays($laundry->estimasi_waktu);
 
         $order = Order::create([
             'no_pemesanan' => $nomor_pemesanan,
@@ -42,8 +44,8 @@ class OrderController extends Controller
             'jenis_pemesanan' => $request->jenis_pemesanan,
             'alamat' => $request->alamat,
             'metode_pembayaran' => $request->metode_pembayaran,
-            'tanggal_pemesanan' => $tanggal_pemesanan,
             'tanggal_pengambilan' => $request->tanggal_pengambilan,
+            'tanggal_estimasi' => $estimatedDate,
             'laundry_id' => $request->laundry_id,
             'user_id' => $user->id,
         ]);
