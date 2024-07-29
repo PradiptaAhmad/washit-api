@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginRequests;
 use App\Http\Requests\RegisterRequest;
 use App\Models\BannedUser;
+use App\Models\Otp;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -200,6 +202,74 @@ class UserController extends Controller
             'message' => 'Profile Picture updated',
             'user' => $user,
         ], 200);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        if ($user == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'User not found',
+            ], 404);
+        }
+        $otp = rand(100000, 999999);
+        $otps = Otp::where('user_id', $user->id)->first();
+        if ($otps != null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Otp already sent. Try again after 5 minutes',
+            ]);
+        }
+        Otp::create([
+            "otp" => $otp,
+            "user_id" => $user->id,
+        ]);
+        $description = 'Ini adalah kode verifiskasi anda untuk reset password akun anda di aplikasi wash it. Jangan berikan kode ini kepada siapapun. Kode berlaku selama 5 menit';
+        Mail::send('email.mail', ['otp' => $otp, "description" => $description, 'username' => $user->username], function ($message) use ($user) {
+            $message->to($user->email, $user->username)->subject('OTP Verification');
+        });
+        return response([
+            'status' => 'success',
+            'message' => 'OTP sent to your email, check your email address',
+        ]);
+    }
+ 
+    public function verifyForgotPassword(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|string|min:6|max:6',
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        $otp = $request->otp;
+        $otps = Otp::where('user_id', $user->id)->first();
+
+        if ($otps == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'OTP not found',
+            ], 404);
+        }
+        if ($otp == $otps->otp) {
+            $otps->delete();
+            $token = $user->createToken('wash_it', ['user'])->accessToken;
+            return response([
+                'status' => 'success',
+                'message' => 'OTP verified successfully, you can use token for reset password',
+                'token' => $token,
+            ], 200);
+        } else {
+            return response([
+                'status' => 'failed',
+                'message' => 'OTP verification failed',
+            ], 401);
+        }
     }
 
 }

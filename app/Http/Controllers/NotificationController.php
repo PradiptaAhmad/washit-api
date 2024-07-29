@@ -30,18 +30,18 @@ class NotificationController extends Controller
         //     ], 403);
         // }
         $user = User::where('id', $request->user_id)->first();
+        if($user == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'User not found'
+            ]);
+        }
         $deviceToken = $user->notification_token;
         $title = $request->title;
         $body = $request->body;
         $imageUrl = $request->imaageUrl;
         $message = $this->firebaseService->sendNotification($deviceToken, $title, $body, $imageUrl );
-
-        notification::create([
-            'user_id' => $request->user_id,
-            'title' => $title,
-            'body' => $body,
-            'imageUrl' => $imageUrl,
-        ]);
+        
         return response([
             'message' => 'Notification sent successfully',
             'data' => $message
@@ -61,12 +61,6 @@ class NotificationController extends Controller
         $imageUrl = $request->imaageUrl;
         $message = $this->firebaseService->sendNotificationToAll($title, $body, $imageUrl );
 
-        notification::create([
-            'user_id' => 0,
-            'title' => $title,
-            'body' => $body,
-            'imageUrl' => $imageUrl,
-        ]);
         return response([
             'message' => 'Notification sent successfully',
             'data' => $message

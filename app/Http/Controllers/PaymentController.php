@@ -51,6 +51,7 @@ class PaymentController extends Controller
             'description' => $description,
             'amount' => $amount,
             'currency' => 'IDR',
+            'payment_methods' => ["OVO", "DANA", "SHOPEEPAY", "LINKAJA", "JENIUSPAY", "QRIS"]
         ];
         $response = $this->XenditService->createInvoice($options);
 
@@ -66,7 +67,7 @@ class PaymentController extends Controller
         // send notification to user
         $expiredDate = Carbon::parse($response['expiry_date']);
         $description = 'Menunggu pembayaran laundry  ' . $order->no_pemesanan . ' ' . '. Bayar sebelum tamggal ' . $expiredDate->format('d F Y') . ' pukul ' . $expiredDate->format('H:i') . ' WIB';
-        $this->firebaseService->sendNotification($payment->user->notification_token, 'Menunggu Pembayaran', 'Tenang kamu bisa membuat pembayaran lagi', '');
+        $this->firebaseService->sendNotification($payment->user->notification_token, 'Menunggu Pembayaran', $description, '');
         return response([
             'status' => 'success',
             'message' => 'Payment created successfully',

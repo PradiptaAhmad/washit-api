@@ -25,8 +25,6 @@ Route::group(['prefix' => 'users'], function () {
         Route::get('/me', [UserController::class, 'details']);
         Route::post('/update-profile-picture', [UserController::class, 'updateProfilePicture']);
         Route::post('/logout', [UserController::class, 'logout']);
-        Route::post('/send-otp', [OtpController::class, 'sendOtp']);
-        Route::post('/verify-otp', [OtpController::class, 'verifyOtp']);
 
         Route::group(['prefix' => 'update',], function () {
             Route::post('/username', [UserController::class, 'updateUsername']);
@@ -36,6 +34,16 @@ Route::group(['prefix' => 'users'], function () {
             Route::post('/profile-picture', [UserController::class, 'updateProfilePicture']);
         });
 
+        Route::group(['prefix' => 'otp',], function () {
+            Route::post('/send', [OtpController::class, 'sendOtp']);
+            Route::post('/verify/phone', [OtpController::class, 'verifyOtp']);
+            Route::post('/verify/email', [OtpController::class, 'verifyEmailOtp']);
+        });
+    });
+
+    Route::group(['prefix' => '/forgot-password',], function () {
+        Route::post('/checkEmail', [UserController::class, 'forgotPassword']);
+        Route::post('/verify', [UserController::class, 'verifyForgotPassword']);
     });
 });
 
@@ -108,6 +116,7 @@ Route::group(['prefix' => '/histories', 'middleware' => ['auth:user', 'scope:use
 
 Route::group(['prefix' => 'notifications', 'middleware' => ['auth:admin', 'scope:admin']], function () {
     Route::post('/send', [NotificationController::class, 'sendNotification']);
+    Route::post('/send-to-all', [NotificationController::class, 'sendNotificationToAll']);
     Route::get('/all', [NotificationController::class, 'getNotifications']);
 });
 
@@ -129,3 +138,5 @@ Route::group(['prefix' => 'ratings', 'middleware' => ['auth:user', 'scope:user']
     Route::get('/get', [RatingController::class, 'getRating']);
 
 });
+
+Route::post('/test', [OtpController::class, 'sendEmailOtp'])->middleware(['auth:user', 'scope:user']);
