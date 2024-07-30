@@ -8,4 +8,5 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
 
-Schedule::command('app:delete-expired-o-t-p')->everyFiveMinutes();
+Schedule::command('app:delete-expired-o-t-p')->everyFiveMinutes()->runInBackground();
+Schedule::command('app:transfer-order-to-history-command')->dailyAt('00:00')->runInBackground();

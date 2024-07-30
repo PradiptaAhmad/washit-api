@@ -24,10 +24,10 @@ class OrderAdminDetailResource extends JsonResource
             'metode_pembayaran' => $this->metode_pembayaran,
             'berat_laundry' => $this->berat_laundry,
             'total_harga' => $this->total_harga,
-            'tanggal_pemesanan' => $this->tanggal_pemesanan,
+            'tanggal_pemesanan' => $this->created_at,
             'tanggal_pengambilan' => $this->tanggal_pengambilan,
-            'laundry_service' => optional($this->laundry)->first()->only(['id', 'nama_laundry',]),
-            'user' => optional($this->user)->first()->only(['id', 'username', 'email', 'phone']),
+            'laundry_service' => optional($this->laundry)->first()->only(['id', 'nama_laundry', 'deskripsi', 'harga']),
+            'user' => optional($this->user)->first(),
         ];
     }
 }
