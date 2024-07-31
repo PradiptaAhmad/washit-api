@@ -20,6 +20,7 @@ class Order extends Model
         'status',
         'tanggal_pengambilan',
         'tanggal_estimasi',
+        'metode_pembayaran',
         'laundry_id',
         'user_id'
     ];
