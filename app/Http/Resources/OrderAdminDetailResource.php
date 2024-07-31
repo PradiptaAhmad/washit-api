@@ -22,6 +22,7 @@ class OrderAdminDetailResource extends JsonResource
             'nomor_telepon' => $this->nomor_telepon,
             'alamat' => $this->alamat,
             'metode_pembayaran' => $this->metode_pembayaran,
+            'catatan' => $this->catatan,
             'berat_laundry' => $this->berat_laundry,
             'total_harga' => $this->total_harga,
             'tanggal_pemesanan' => $this->tanggal_pemesanan,

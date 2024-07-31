@@ -23,10 +23,11 @@ class UserOrderDetailResource extends JsonResource
             'alamat' => $this->alamat,
             'metode_pembayaran' => $this->metode_pembayaran,
             'berat_laundry' => $this->berat_laundry,
+            'catatan' => $this->catatan,
             'total_harga' => $this->total_harga,
             'tanggal_pemesanan' => $this->tanggal_pemesanan,
             'tanggal_pengambilan' => $this->tanggal_pengambilan,
-            'laundry_service' => optional($this->laundry)->first()->only(['id', 'nama_laundry',]),
+            'laundry_service' => optional($this->laundry)->first()->only(['id', 'nama_laundry', 'harga', 'deskripsi']),
         ];
     }
 }
