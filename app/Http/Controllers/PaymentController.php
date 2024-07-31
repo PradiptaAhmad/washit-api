@@ -54,7 +54,6 @@ class PaymentController extends Controller
             'payment_methods' => ["OVO", "DANA", "SHOPEEPAY", "LINKAJA", "JENIUSPAY", "QRIS"]
         ];
         $response = $this->XenditService->createInvoice($options);
-
         $payment = new Payment();
         $payment->status = 'pending';
         $payment->invoice_id = $response['id'];
