@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\OrderStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -25,6 +26,7 @@ class OrderResource extends JsonResource
             'nama_pemesan' => $this->nama_pemesan,
             'berat_laundry' => $this->berat_laundry,
             'total_harga' => $this->total_harga,
+            'status' => OrderStatus::where('order_id', $this->id)->latest()->first()->status_description,
         ];
     }
 }
