@@ -17,6 +17,7 @@ class Order extends Model
         'alamat',
         'berat_laundry',
         'total_harga',
+        'catatan',
         'status',
         'tanggal_pengambilan',
         'tanggal_estimasi',

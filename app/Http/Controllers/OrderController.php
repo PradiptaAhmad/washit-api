@@ -45,6 +45,7 @@ class OrderController extends Controller
             'nomor_telepon' => $request->nomor_telepon,
             'jenis_pemesanan' => $request->jenis_pemesanan,
             'alamat' => $request->alamat,
+            'catatan' => $request->catatan,
             'metode_pembayaran' => $request->metode_pembayaran,
             'tanggal_pengambilan' => $request->tanggal_pengambilan,
             'tanggal_estimasi' => $estimatedDate,
