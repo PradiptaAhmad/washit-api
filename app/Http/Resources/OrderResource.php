@@ -19,6 +19,7 @@ class OrderResource extends JsonResource
             'no_pemesanan' => $this->no_pemesanan,
             'nama_laundry' => optional($this->laundry)->nama_laundry,
             'jenis_pemesanan' => $this->jenis_pemesanan,
+            'alamat' => $this->alamat,
             'tanggal_estimasi' => $this->tanggal_estimasi,
             'tanggal_pemesanan' => $this->created_at,
             'nama_pemesan' => $this->nama_pemesan,

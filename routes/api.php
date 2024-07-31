@@ -100,12 +100,17 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/summary', [RatingController::class, 'getRatingSummary']);
             Route::delete('/delete/{id}', [RatingController::class, 'deleteRating']);
         });
+
+        Route::group(['prefix' => 'histories'], function () {
+            Route::get('/all', [HistoryController::class, 'getAdminHistory']);
+            Route::get('/detail', [HistoryController::class, 'getDetailAdminHistory']);
+        });
     });
 });
 
 Route::group(['prefix' => '/histories', 'middleware' => ['auth:user', 'scope:user']], function () {
     Route::get('/all', [HistoryController::class, 'getHistory']);
-    Route::post('/add', [HistoryController::class, 'addHistory']);
+    Route::get('/detail', [HistoryController::class, 'getHistoryDetail']);
     Route::delete('/delete/{id}', [HistoryController::class, 'deleteHistory']);
 });
 
@@ -134,4 +139,4 @@ Route::group(['prefix' => 'ratings', 'middleware' => ['auth:user', 'scope:user']
 
 });
 
-Route::post('/test', [OtpController::class, 'sendEmailOtp'])->middleware(['auth:user', 'scope:user']);
+Route::post('/test', [HistoryController::class, 'migrateToHistories']);

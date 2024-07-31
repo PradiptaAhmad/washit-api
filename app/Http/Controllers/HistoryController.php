@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AdminHistoryDetailResource;
+use App\Http\Resources\HistoryDetailResource;
 use App\Http\Resources\HistoryResource;
 use App\Models\History;
 use App\Models\Order;
@@ -20,23 +22,48 @@ class HistoryController extends Controller
                 'message' => 'No history found',
             ]);
         }
-        return new HistoryResource($histories);
+        return HistoryResource::collection($histories);
     }
 
-    public function migrateToHistories()
+    public function getHistoryDetail(Request $request)
     {
-        $orders = Order::all();
-        foreach ($orders as $order) {
-            History::create([
-                'no_pemesanan' => $order->no_pemesanan,
-                'nama_pemesan' => $order->nama_pemesan,
-                'nomor_telepon' => $order->nomor_telepon,
-                'jenis_pemesanan' => $order->jenis_pemesanan,
-                'alamat' => $order->alamat,
-                'tanggal_pemesanan' => $order->tanggal_pemesanan,
-                'tanggal_pengambilan' => $order->tanggal_pengambilan,
-                'laundry_id' => $order
+        $request->validate([
+            'history_id' => 'required|integer|exists:histories,id',
+        ]);
+        $user = auth()->user();
+        $history = History::where('id', $request->history_id)->first();
+
+        if ($history == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'No history found',
             ]);
         }
+        return response([
+            'status' => 'success',
+            'data' => new HistoryDetailResource($history),
+        ]);
+    }
+
+    public function getAdminHistory()
+    {
+        $history = History::all();
+        return response([
+            'status' => 'success',
+            'data' => HistoryResource::collection($history),
+        ]);
+    }
+
+    public function getDetailAdminHistory(Request $request)
+    {
+        $request->validate([
+            'history_id' => 'required|integer|exists:histories,id'
+        ]);
+
+        $history = History::where('id', $request->history_id)->first();
+        return response([
+            'status' => 'success',
+            'data' => new AdminHistoryDetailResource($history),
+        ]);
     }
 }
