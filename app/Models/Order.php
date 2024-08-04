@@ -42,4 +42,8 @@ class Order extends Model
     public function laundry() {
         return $this->belongsTo(Laundry::class);
     }
+
+    public function transaction() {
+        return $this->hasOne(Transaction::class);
+    }
 }

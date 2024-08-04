@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Transaction extends Model
+class TransactionHistory extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'payment_type',
         'external_id',
         'payment_method',
@@ -19,6 +20,6 @@ class Transaction extends Model
         'description',
         'payment_id',
         'paid_at',
-        'order_id'
+        'history_id'
     ];
 }

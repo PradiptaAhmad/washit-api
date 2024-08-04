@@ -12,6 +12,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\BannedUserController;
 use App\Http\Controllers\OrderStatusController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\TransactionController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -105,6 +106,11 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/all', [HistoryController::class, 'getAdminHistory']);
             Route::get('/detail', [HistoryController::class, 'getDetailAdminHistory']);
         });
+
+        Route::group(['prefix' => 'transaction'], function () {
+            Route::get('/all', [TransactionController::class, 'getAllTransaction']);
+            Route::delete('/delete/{id}', [PaymentController::class, 'deleteTransaction']);
+        });
     });
 });
 
@@ -129,7 +135,7 @@ Route::group(['prefix' => 'payments'], function () {
     });
 
     Route::group(['prefix' => 'callback', 'middleware' => 'xendit-callback'], function () {
-        Route::post('/invoice-status', [PaymentController::class, 'invoiceStatus']);
+        Route::post('/invoice-status', [TransactionController::class, 'invoiceStatus']);
     });
 });
 
@@ -137,6 +143,10 @@ Route::group(['prefix' => 'ratings', 'middleware' => ['auth:user', 'scope:user']
     Route::post('/add', [RatingController::class, 'addRating']);
     Route::get('/get', [RatingController::class, 'getRating']);
 
+});
+
+Route::group(['prefix' => 'transaction', 'middleware' => ['auth:user', 'scope:user']], function () {
+    Route::get('/get', [TransactionController::class, 'getTransaction']);
 });
 
 Route::post('/test', [HistoryController::class, 'migrateToHistories']);

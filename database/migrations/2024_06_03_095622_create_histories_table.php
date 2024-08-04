@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('histories', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->unique()->primary();
             $table->string("no_pemesanan")->unique();
             $table->enum('jenis_pemesanan', ['antar_jemput', 'antar_mandiri'])->default('antar_jemput');
             $table->string("nama_pemesan");
@@ -41,7 +41,7 @@ return new class extends Migration
         Schema::table('histories', function (Blueprint $table) {
             $table->dropForeign(["laundry_id"]);
             $table->dropForeign(["user_id"]);
-        }); 
+        });
         Schema::dropIfExists('histories');
     }
 };

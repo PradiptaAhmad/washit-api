@@ -16,12 +16,10 @@ return new class extends Migration
             $table->double('rating');
             $table->text('review');
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('order_id')->nullable();
             $table->unsignedBigInteger('history_id')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('order_id')->references('id')->on('orders')->onDelete('set null');
             $table->foreign('history_id')->references('id')->on('histories')->onDelete('set null');
         });
     }
@@ -33,7 +31,6 @@ return new class extends Migration
     {
         Schema::table('ratings', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
-            $table->dropForeign(['order_id']);
             $table->dropForeign(['history_id']);
         });
         Schema::dropIfExists('ratings');

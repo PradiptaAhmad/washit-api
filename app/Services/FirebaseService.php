@@ -50,7 +50,7 @@ class FirebaseService
 
         $message = CloudMessage::new()
             ->withNotification($notification);
-        
+
         $messages[] = $message;
         $notify = $this->messaging->sendMulticast($messages, $token);
         $this->writeNotification("", $title, $body, $imageUrl);
