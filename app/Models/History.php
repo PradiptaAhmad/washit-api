@@ -31,4 +31,14 @@ class History extends Model
     {
         return $this->belongsTo(Transaction::class);
     }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function laundry(): BelongsTo
+    {
+        return $this->belongsTo(Laundry::class);
+    }
 }

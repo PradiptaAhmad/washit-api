@@ -17,16 +17,14 @@ class HistoryResource extends JsonResource
         return [
             'id' => $this->id,
             'no_pemesanan' => $this->no_pemesanan,
+            'nama_laundry' => optional($this->laundry)->nama_laundry,
             'jenis_pemesanan' => $this->jenis_pemesanan,
-            'nama_pemesan' => $this->nama_pelanggan,
-            'nomor_telepon' => $this->nomor_telepon,
             'alamat' => $this->alamat,
+            'tanggal_estimasi' => $this->tanggal_estimasi,
+            'tanggal_pemesanan' => $this->created_at,
+            'nama_pemesan' => $this->nama_pemesan,
             'berat_laundry' => $this->berat_laundry,
             'total_harga' => $this->total_harga,
-            'payment_method' => $this->payment_method,
-            'tanggal_pemesanan' => $this->tanggal_pemesanan,
-            'tanggal_pengambilan' => $this->tanggal_pengambilan,
-            'transactions' => new TransactionResource($this->transactions),
         ];
     }
 }

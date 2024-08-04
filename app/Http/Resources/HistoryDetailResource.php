@@ -2,11 +2,10 @@
 
 namespace App\Http\Resources;
 
-use App\Models\OrderStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class OrderResource extends JsonResource
+class HistoryDetailResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,15 +17,17 @@ class OrderResource extends JsonResource
         return [
             'id' => $this->id,
             'no_pemesanan' => $this->no_pemesanan,
-            'nama_laundry' => optional($this->laundry)->nama_laundry,
             'jenis_pemesanan' => $this->jenis_pemesanan,
-            'alamat' => $this->alamat,
-            'tanggal_estimasi' => $this->tanggal_estimasi,
-            'tanggal_pemesanan' => $this->created_at,
             'nama_pemesan' => $this->nama_pemesan,
+            'nomor_telepon' => $this->nomor_telepon,
+            'alamat' => $this->alamat,
+            'metode_pembayaran' => $this->metode_pembayaran,
             'berat_laundry' => $this->berat_laundry,
             'total_harga' => $this->total_harga,
-            'status' => OrderStatus::where('order_id', $this->id)->latest()->first()->status_description,
+            'tanggal_pemesanan' => $this->created_at,
+            'tanggal_pengambilan' => $this->tanggal_pengambilan,
+            'tanggal_estimasi' => $this->tanggal_estimasi,
+            'laundry_service' => optional($this->laundry)->first()->only(['id', 'nama_laundry', 'deskripsi', 'harga']),
         ];
     }
 }

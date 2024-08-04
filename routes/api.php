@@ -102,16 +102,21 @@ Route::group(['prefix' => 'admin'], function () {
             Route::delete('/delete/{id}', [RatingController::class, 'deleteRating']);
         });
 
+        Route::group(['prefix' => 'histories'], function () {
+            Route::get('/all', [HistoryController::class, 'getAdminHistory']);
+            Route::get('/detail', [HistoryController::class, 'getDetailAdminHistory']);
+        });
+
         Route::group(['prefix' => 'transaction'], function () {
             Route::get('/all', [TransactionController::class, 'getAllTransaction']);
-            Route::delete('/delete', [TransactionController::class, 'deleteTransaction']);
+            Route::delete('/delete/{id}', [PaymentController::class, 'deleteTransaction']);
         });
     });
 });
 
 Route::group(['prefix' => '/histories', 'middleware' => ['auth:user', 'scope:user']], function () {
     Route::get('/all', [HistoryController::class, 'getHistory']);
-    Route::post('/add', [HistoryController::class, 'addHistory']);
+    Route::get('/detail', [HistoryController::class, 'getHistoryDetail']);
     Route::delete('/delete/{id}', [HistoryController::class, 'deleteHistory']);
 });
 
@@ -144,4 +149,4 @@ Route::group(['prefix' => 'transaction', 'middleware' => ['auth:user', 'scope:us
     Route::get('/get', [TransactionController::class, 'getTransaction']);
 });
 
-Route::post('/test', [OtpController::class, 'sendEmailOtp'])->middleware(['auth:user', 'scope:user']);
+Route::post('/test', [HistoryController::class, 'migrateToHistories']);
