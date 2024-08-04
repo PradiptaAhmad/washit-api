@@ -12,7 +12,7 @@ class RatingController extends Controller
     {
         $request->validated();
         $user = auth()->user();
-        $checkRating = Rating::where('order_id', $request->order_id)->where('user_id', $user->id)->first();
+        $checkRating = Rating::where('history_id', $request->history_id)->where('user_id', $user->id)->first();
         if ($checkRating) {
             return response([
                 'status' => 'failed',
@@ -22,7 +22,7 @@ class RatingController extends Controller
         $rating = Rating::create([
             'rating' => $request->rating,
             'review' => $request->review,
-            'order_id' => $request->order_id,
+            'history' => $request->order_id,
             'user_id' => $user->id,
         ]);
 
@@ -35,10 +35,9 @@ class RatingController extends Controller
 
     public function getRating(Request $request)
     {
-        $request->validate([
-            'order_id' => 'required|integer|exists:orders,id',
+        $request->validate(['history_id' => 'required|integer|exists:histories,id',
         ]);
-        $rating = Rating::where('order_id', $request->order_id)->first();
+        $rating = Rating::where('history_id', $request->history_id)->first();
         if ($rating == null) {
             return response([
                 'status' => 'failed',

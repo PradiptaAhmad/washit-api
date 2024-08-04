@@ -11,6 +11,7 @@ class History extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'no_pemesanan',
         'jenis_pemesanan',
         'nama_pemesan',

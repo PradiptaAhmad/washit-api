@@ -9,6 +9,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/payment/redirect', function () {
+    return view('payment.redirect');
+});
+
 Route::get('/image/{filename}', function ($filename) {
     $path = storage_path('app/public/images/' . $filename);
 

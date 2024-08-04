@@ -11,6 +11,8 @@ use App\Models\History;
 use App\Models\Laundry;
 use App\Models\Order;
 use App\Models\OrderStatus;
+use App\Models\Transaction;
+use App\Models\TransactionHistory;
 use App\Models\User;
 use App\Services\FirebaseService;
 use App\Services\OrderStatusService;
@@ -137,51 +139,6 @@ class OrderController extends Controller
         ], 201);
     }
 
-    public function rejectOrder(Request $request)
-    {
-        $request->validate([
-            'id' => 'required|integer',
-        ]);
-        $auth = User::where('email', auth()->user()->email)->first();
-        if ($auth->role != 'admin') {
-            return response([
-                'status' => 'failed',
-                'message' => 'Not authorized'
-            ], 401);
-        }
-        $order = Order::where('id', $request->id)->first();
-        if ($order == null) {
-            return response([
-                'status' => 'failed',
-                'message' => 'Order Not Found'
-            ], 301);
-        }
-        if ($order->accepted == true) {
-            return response([
-                'status' => 'failed',
-                'message' => 'Order Accepted'
-            ], 401);
-        }
-        OrderStatus::create([
-            'status' => 'failed',
-            'status_name' => 'Pesanan Ditolak',
-            'status_description' => 'Order Rejected',
-            'order_id' => $order->id,
-        ]);
-        $user = $order->user;
-        $title = "Hai " . $user->username . " Mohon maaf pesananmu tidak bisa kami terima";
-        $body = '';
-        if ($order->jenis_pemesanan == 'antar_jemput') {
-            $body = "Maaf kami tidak bisa mengambil laundry kamu saat ini";
-        }
-        $body = "Mohon maaf pesanan dengan nomor " . $order->no_pemesanan . " tidak bisa kami terima";
-        $message = $this->firebaseService->sendNotification($user->notification_token, $title, $body, '');
-        return response([
-            'status' => 'success',
-            'message' => 'Order Rejected Notifiction sent successfully',
-        ], 201);
-    }
-
     // Admin Order Controller
     public function updateWeight(Request $request)
     {
@@ -194,7 +151,7 @@ class OrderController extends Controller
             return response([
                 'status' => 'failed',
                 'message' => 'Order Not Found'
-            ], 301);
+            ], 400);
         }
         $totalPrice = $order->laundry->harga * $request->berat_laundry;
         $order->berat_laundry = $request->berat_laundry;
@@ -292,7 +249,9 @@ class OrderController extends Controller
             'order_id' => 'required|integer|exists:orders,id',
         ]);
         $order = Order::where('id', $request->order_id)->first();
-        History::create($order->only([
+        $transaction = Transaction::where('order_id', $request->order_id)->first();
+        $history = History::create($order->only([
+            'id',
             'no_pemesanan',
             'jenis_pemesanan',
             'nama_pemesan',
@@ -307,6 +266,24 @@ class OrderController extends Controller
             'laundry_id',
             'user_id',
         ]));
+        if ($transaction != null) {
+            TransactionHistory::create(
+                [
+                    'id' => $transaction->id,
+                    'payment_type' => $transaction->payment_type,
+                    'external_id' => $transaction->external_id,
+                    'payment_method' => $transaction->payment_method,
+                    'status' => $transaction->status,
+                    'amount' => $transaction->amount,
+                    'payment_id' => $transaction->payment_id,
+                    'payment_channel' => $transaction->payment_channel,
+                    'description' => $transaction->description,
+                    'paid_at' => $transaction->paid_at,
+                    'history_id' => $order->id,
+                ]
+            );
+        }
+        $transaction->delete();
         $order->delete();
 
         return response([

@@ -30,6 +30,13 @@ class PaymentController extends Controller
         $order = Order::where('id', $request->order_id)->first();
         $external_id = (string) date('YmdHis');
         $description = 'Membayar Laundry ' . $order->laundry->nama_laundry . ' ' . $user->username;
+
+        if ($order->total_harga == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Harga belum ditentukan',
+            ], 400);
+        }
         $amount = $order->total_harga;
 
         $transaction = Payment::where('order_id', $order->id)->first();
@@ -65,7 +72,7 @@ class PaymentController extends Controller
 
         // send notification to user
         $expiredDate = Carbon::parse($response['expiry_date']);
-        $description = 'Menunggu pembayaran laundry  ' . $order->no_pemesanan . ' ' . '. Bayar sebelum tamggal ' . $expiredDate->format('d F Y') . ' pukul ' . $expiredDate->format('H:i') . ' WIB';
+        $description = 'Menunggu pembayaran laundry  ' . $order->no_pemesanan . '. Bayar sebelum tamggal ' . $expiredDate->format('d F Y') . ' pukul ' . $expiredDate->format('H:i') . ' WIB';
         $this->firebaseService->sendNotification($payment->user->notification_token, 'Menunggu Pembayaran', $description, '');
         return response([
             'status' => 'success',
@@ -127,23 +134,7 @@ class PaymentController extends Controller
         ], 200);
     }
 
-    public function invoiceStatus(Request $request)
-    {
-        $payment = Payment::where('external_id', $request->external_id)->first();
-        if ($payment == null) {
-            return response([
-                'status' => 'failed',
-                'message' => 'Payment not found',
-            ], 404);
-        }
-        $payment->status = strtolower($request->status);
-        $payment->save();
-        return response([
-            'status' => 'success',
-            'message' => 'Payment status updated',
-            'payment_status' => $payment->status,
-        ], 200);
-    }
+
 
     public function getInvoiceUser(Request $request)
     {
