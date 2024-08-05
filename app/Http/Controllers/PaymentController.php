@@ -82,9 +82,12 @@ class PaymentController extends Controller
         ], 201);
     }
 
-    public function expirePayment($id)
+    public function expirePayment(Request $request)
     {
-        $payment = Payment::where('order_id', $id)->first();
+        $request->validate([
+            'order_id' => 'required|integer|exists:orders,id',
+        ]);
+        $payment = Payment::where('order_id', $request->id)->first();
         if ($payment == null) {
             return response([
                 'status' => 'failed',
