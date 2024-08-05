@@ -161,6 +161,7 @@ class OrderStatusService
         $this->createOrderStatus($id, 'failed', '99', 'Pesanan Dibatalkan');
         $this->firebaseService->sendNotification($order->user->notification_token, 'Pesanan Dibatalkan', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Telah dibatalkan', '', ['route' => '/transaction-page', 'data' => $order->id]);
         return true;
+        
     }
 
     public function checkPayment($id)
