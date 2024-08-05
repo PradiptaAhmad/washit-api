@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\NotificationRequest;
+use App\Models\Admin;
 use App\Models\notification;
 use App\Models\Notification as ModelsNotification;
 use App\Models\User;
@@ -41,7 +42,7 @@ class NotificationController extends Controller
         $body = $request->body;
         $imageUrl = $request->imaageUrl;
         $message = $this->firebaseService->sendNotification($deviceToken, $title, $body, $imageUrl );
-        
+
         return response([
             'message' => 'Notification sent successfully',
             'data' => $message
@@ -60,6 +61,25 @@ class NotificationController extends Controller
         $body = $request->body;
         $imageUrl = $request->imaageUrl;
         $message = $this->firebaseService->sendNotificationToAll($title, $body, $imageUrl );
+
+        return response([
+            'message' => 'Notification sent successfully',
+            'data' => $message
+        ]);
+    }
+
+    public function sendNotificationToAdmin(Request $request)
+    {
+        $account = auth()->user();
+        $request->validate([
+            'title' => 'required|string',
+            'body' => 'required|string',
+            'imageUrl' => 'nullable|string',
+        ]);
+        $title = $request->title;
+        $body = $request->body;
+        $imageUrl = $request->imaageUrl;
+        $message = $this->firebaseService->sendToAdmin($title, $body, $imageUrl);
 
         return response([
             'message' => 'Notification sent successfully',

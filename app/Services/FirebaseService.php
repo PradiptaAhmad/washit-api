@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Admin;
 use App\Models\notification as NotificationModel;
 use App\Models\User;
 use Kreait\Firebase\Messaging\CloudMessage;
@@ -43,17 +44,30 @@ class FirebaseService
         $this->writeNotification($deviceToken, $title, $body, $imageUrl);
         return $notify;
     }
-    public function sendNotificationToall($title, $body, $imageUrl)
+    public function sendNotificationToall($title, $body, $imageUrl, $data = [])
     {
-        $token = User::whereNotNull('notification_token')->pluck('notification_token')->toArray();
+        $token = User::whereNotNull('notification_token')->get();
         $notification = Notification::create($title, $body, $imageUrl);
 
-        $message = CloudMessage::new()
-            ->withNotification($notification);
-
-        $messages[] = $message;
-        $notify = $this->messaging->sendMulticast($messages, $token);
+        foreach ($token as $deviceToken) {
+            $message = CloudMessage::withTarget('token', $deviceToken->notification_token)
+                ->withNotification($notification)->withData($data);
+            $notify = $this->messaging->send($message);
+        }
         $this->writeNotification("", $title, $body, $imageUrl);
+        return $notify;
+    }
+
+    public function sendToAdmin($title, $body, $imageUrl, $data = [])
+    {
+        $token = Admin::whereNotNull('notification_token')->get();
+        $notification = Notification::create($title, $body, $imageUrl);
+
+        foreach ($token as $deviceToken) {
+            $message = CloudMessage::withTarget('token', $deviceToken->notification_token)
+                ->withNotification($notification)->withData($data);
+            $notify = $this->messaging->send($message);
+        }
         return $notify;
     }
 }
