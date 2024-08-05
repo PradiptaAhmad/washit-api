@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\OrderStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,7 +28,9 @@ class OrderAdminDetailResource extends JsonResource
             'total_harga' => $this->total_harga,
             'tanggal_pemesanan' => $this->created_at,
             'tanggal_pengambilan' => $this->tanggal_pengambilan,
+            'tanggal_estimasi' => $this->tanggal_estimasi,
             'laundry_service' => optional($this->laundry)->nama_laundry,
+            'status' => OrderStatus::where('order_id', $this->id)->latest()->first()->status_description,
             'user' => optional($this->user)->first()->only(['id', 'username', 'email', 'phone']),
             'transaction' => optional($this->transaction)->first(),
         ];

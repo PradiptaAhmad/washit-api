@@ -123,6 +123,7 @@ Route::group(['prefix' => '/histories', 'middleware' => ['auth:user', 'scope:use
 Route::group(['prefix' => 'notifications', 'middleware' => ['auth:admin', 'scope:admin']], function () {
     Route::post('/send', [NotificationController::class, 'sendNotification']);
     Route::post('/send-to-all', [NotificationController::class, 'sendNotificationToAll']);
+    Route::post('/send-to-admin', [NotificationController::class, 'sendNotificationToAdmin']);
     Route::get('/all', [NotificationController::class, 'getNotifications']);
 });
 

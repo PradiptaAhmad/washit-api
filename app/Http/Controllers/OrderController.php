@@ -55,6 +55,7 @@ class OrderController extends Controller
             'user_id' => $user->id,
         ]);
         $this->updateStatusService->updateStatus($order->id);
+        $this->firebaseService->sendToAdmin("Ada Pesanan Baru", "Ada Pesanan Baru Dari " . $user->username, '', ['route' => '/transaction_page.screen', 'data' => $order->id]);
         return response([
             'status' => 'success',
             'message' => 'Order created successfully',
