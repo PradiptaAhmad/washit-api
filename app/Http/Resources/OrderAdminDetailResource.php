@@ -27,14 +27,9 @@ class OrderAdminDetailResource extends JsonResource
             'total_harga' => $this->total_harga,
             'tanggal_pemesanan' => $this->created_at,
             'tanggal_pengambilan' => $this->tanggal_pengambilan,
-<<<<<<< HEAD
             'laundry_service' => optional($this->laundry)->nama_laundry,
             'user' => optional($this->user)->first()->only(['id', 'username', 'email', 'phone']),
             'transaction' => optional($this->transaction)->first(),
-=======
-            'laundry_service' => optional($this->laundry)->first()->only(['id', 'nama_laundry', 'deskripsi', 'harga']),
-            'user' => optional($this->user)->first(),
->>>>>>> 46d3e73ec3051279560733fd1a19884ad7b83fc7
         ];
     }
 }
