@@ -70,7 +70,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/login', [AdminController::class, 'login']);
         Route::post('/register', [AdminController::class, 'register']);
         Route::get('/details', [AdminController::class, 'adminDetails'])->middleware(['auth:admin', 'scope:admin']);
-        Route::post('/logout', [AdminController::class, 'logout'])->middleware(['auth:admin', 'scope:admin']);
+        Route::delete('/logout', [AdminController::class, 'logout'])->middleware(['auth:admin', 'scope:admin']);
     });
 
     Route::middleware(['auth:admin', 'scope:admin'],)->group(function () {
@@ -94,6 +94,11 @@ Route::group(['prefix' => 'admin'], function () {
             Route::put('/update-weight', [OrderController::class, 'updateWeight']);
             Route::put('/status/update', [OrderStatusController::class, 'updateOrderStatus']);
             Route::delete('/status/delete/{id}', [OrderStatusController::class, 'deleteStatus']);
+        });
+
+        Route::group(['prefix' => 'order/status'], function () {
+            Route::get('/all', [OrderStatusController::class, 'getOrderStatus']);
+            Route::get('/last', [OrderStatusController::class, 'getLastStatus']);
         });
 
         Route::group(['prefix' => 'ratings'], function () {
