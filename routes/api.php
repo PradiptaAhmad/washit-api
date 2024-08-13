@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\UserController;
@@ -96,7 +97,7 @@ Route::group(['prefix' => 'admin'], function () {
             Route::delete('/status/delete/{id}', [OrderStatusController::class, 'deleteStatus']);
         });
 
-        Route::group(['prefix' => 'order/status'], function () {
+        Route::group(['prefix' => 'orders/status'], function () {
             Route::get('/all', [OrderStatusController::class, 'getOrderStatus']);
             Route::get('/last', [OrderStatusController::class, 'getLastStatus']);
         });
@@ -149,6 +150,25 @@ Route::group(['prefix' => 'ratings', 'middleware' => ['auth:user', 'scope:user']
     Route::post('/add', [RatingController::class, 'addRating']);
     Route::get('/get', [RatingController::class, 'getRating']);
 
+});
+
+Route::group(['prefix' => 'addresses'], function () {
+
+    Route::middleware(['auth:user', 'scope:user'])->group(function () {
+        Route::post('/add', [AddressController::class, 'addAddress']);
+        Route::get('/get', [AddressController::class, 'getAddressPerUser']);
+        Route::put('/edit', [AddressController::class, 'editAddress']);
+        Route::delete('/delete', [AddressController::class, 'deleteAddress']);
+    });
+
+    Route::group(['prefix' => 'get'], function () {
+        Route::get('/search', [AddressController::class, 'getAddressByCode']);
+        Route::get('/provinces', [AddressController::class, 'getProvince']);
+        Route::get('/cities', [AddressController::class, 'getCityByProvince']);
+        Route::get('/districts', [AddressController::class, 'getDistrictByCity']);
+        Route::get('/villages', [AddressController::class, 'getVillageByDistrict']);
+        Route::get('postal-code', [AddressController::class, 'getPostalCodeByVilage']);
+    });
 });
 
 Route::group(['prefix' => 'transaction', 'middleware' => ['auth:user', 'scope:user']], function () {

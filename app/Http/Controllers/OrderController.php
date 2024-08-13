@@ -6,6 +6,7 @@ use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrderAdminDetailResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\UserOrderDetailResource;
+use App\Models\Address;
 use App\Models\Admin;
 use App\Models\History;
 use App\Models\Laundry;
@@ -40,13 +41,14 @@ class OrderController extends Controller
         $laundry = Laundry::where('id', $request->laundry_id)->first();
         $estimasi = $laundry->estimasi_waktu;
         $estimatedDate = Carbon::now()->addDays($estimasi);
-
+        $address = Address::where('id', $request->address_id)->first();
+        $alamat = $address->street . ', Kel. ' . $address->village . ', Kec. ' . $address->district . ', ' . $address->city . ', ' . $address->province;
         $order = Order::create([
             'no_pemesanan' => $nomor_pemesanan,
             'nama_pemesan' => $request->nama_pemesan,
             'nomor_telepon' => $request->nomor_telepon,
             'jenis_pemesanan' => $request->jenis_pemesanan,
-            'alamat' => $request->alamat,
+            'alamat' => $alamat,
             'catatan' => $request->catatan,
             'metode_pembayaran' => $request->metode_pembayaran,
             'tanggal_pengambilan' => $request->tanggal_pengambilan,
@@ -283,8 +285,8 @@ class OrderController extends Controller
                     'history_id' => $order->id,
                 ]
             );
+            $transaction->delete();
         }
-        $transaction->delete();
         $order->delete();
 
         return response([
