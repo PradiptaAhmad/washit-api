@@ -34,7 +34,6 @@ return new class extends Migration
         Schema::table('payments', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
             $table->dropForeign(['order_id']);
-            $table->dropForeign(['history_id']);
         });
         Schema::dropIfExists('payments');
     }

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\BanUserRequest;
-use App\Http\Requests\LoginRequests;
-use App\Http\Requests\RegisterRequest;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use App\Models\Admin;
 use App\Models\Order;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\LoginRequests;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\BanUserRequest;
+use App\Http\Requests\RegisterRequest;
 
 class AdminController extends Controller
 {

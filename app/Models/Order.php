@@ -14,8 +14,8 @@ class Order extends Model
         'jenis_pemesanan',
         'nama_pemesan',
         'nomor_telepon',
-        'alamat',
         'berat_laundry',
+        'alamat',
         'total_harga',
         'catatan',
         'status',
@@ -28,7 +28,9 @@ class Order extends Model
 
     protected $casts = [
         'total_harga' => 'integer',
-        'berat_laundry' => 'integer'
+        'berat_laundry' => 'integer',
+        "laundry_id" => 'integer',
+        "user_id" => 'integer',
     ];
 
     public function user() {
@@ -45,5 +47,10 @@ class Order extends Model
 
     public function transaction() {
         return $this->hasOne(Transaction::class);
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class);
     }
 }
