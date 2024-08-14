@@ -125,4 +125,18 @@ class HistoryController extends Controller
             'data' => $result,
         ]);
     }
+
+    public function filterByService(Request $request)
+    {
+        $user = $request->user();
+        $request->validate([
+            'service' => 'required|in:' . implode(',', ['antar_jemput', 'antar_mandiri']),
+        ]);
+        $histories = History::where('user_id', $user->id)->where('jenis_pemesanan', $request->service)->get();
+        return response([
+            'status' => 'success',
+            'message' => 'History fetched successfully',
+            'data' => HistoryResource::collection($histories),
+        ]);
+    }
 }
