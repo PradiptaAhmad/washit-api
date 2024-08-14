@@ -7,19 +7,15 @@ use App\Http\Resources\OrderAdminDetailResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\UserOrderDetailResource;
 use App\Models\Address;
-use App\Models\Admin;
 use App\Models\History;
 use App\Models\Laundry;
 use App\Models\Order;
-use App\Models\OrderStatus;
 use App\Models\Transaction;
 use App\Models\TransactionHistory;
-use App\Models\User;
 use App\Services\FirebaseService;
 use App\Services\OrderStatusService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
