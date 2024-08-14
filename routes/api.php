@@ -124,6 +124,7 @@ Route::group(['prefix' => '/histories', 'middleware' => ['auth:user', 'scope:use
     Route::get('/all', [HistoryController::class, 'getHistory']);
     Route::get('/detail', [HistoryController::class, 'getHistoryDetail']);
     Route::get('/filter/date', [HistoryController::class, 'filterHistoryByDate']);
+    Route::get('/search', [HistoryController::class, 'searchHistory']);
     Route::delete('/delete/{id}', [HistoryController::class, 'deleteHistory']);
 });
 

@@ -8,6 +8,7 @@ use App\Http\Resources\HistoryResource;
 use App\Models\History;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HistoryController extends Controller
 {
@@ -84,6 +85,44 @@ class HistoryController extends Controller
             'status' => 'success',
             'message' => 'History fetched successfully',
             'data' => HistoryResource::collection($histories),
+        ]);
+    }
+
+    public function searchHistory(Request $request)
+    {
+        $user = $request->user();
+        $request->validate([
+            'q' => 'required|string',
+        ]);
+        $query = $request->q;
+        $result = [];
+        $collums = [
+            'no_pemesanan',
+            'jenis_pemesanan',
+            'nama_pemesan',
+            'nomor_telepon',
+            'alamat',
+            'metode_pembayaran',
+            'berat_laundry',
+            'total_harga',
+            'status',
+            'catatan',
+            'laundry_service',
+            'laundry_description',
+            'laundry_price',
+        ];
+        foreach ($collums as $collum) {
+            $histories = History::where('user_id', $user->id)
+                ->where($collum, 'like', '%' . $query . '%')
+                ->get();
+            if (!$histories == null) {
+                $result = array_merge($result, $histories->toArray());
+            }
+        }
+        return response([
+            'status' => 'success',
+            'message' => 'History fetched successfully',
+            'data' => $result,
         ]);
     }
 }
