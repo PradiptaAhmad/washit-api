@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string("deskripsi");
             $table->integer("harga");
             $table->integer("estimasi_waktu");
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

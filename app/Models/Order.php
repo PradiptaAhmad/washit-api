@@ -22,7 +22,9 @@ class Order extends Model
         'tanggal_pengambilan',
         'tanggal_estimasi',
         'metode_pembayaran',
-        'laundry_id',
+        'laundry_service',
+        'laundry_description',
+        'laundry_price',
         'user_id'
     ];
 
@@ -30,6 +32,7 @@ class Order extends Model
         'total_harga' => 'integer',
         'berat_laundry' => 'integer',
         "laundry_id" => 'integer',
+        "laundry_price" => 'integer',
         "user_id" => 'integer',
     ];
 
@@ -39,10 +42,6 @@ class Order extends Model
 
     public function status() {
         return $this->hasMany(OrderStatus::class);
-    }
-
-    public function laundry() {
-        return $this->belongsTo(Laundry::class);
     }
 
     public function transaction() {

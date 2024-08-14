@@ -23,22 +23,27 @@ class History extends Model
         'status',
         'tanggal_pengambilan',
         'tanggal_estimasi',
-        'laundry_id',
+        'catatan',
+        'laundry_service',
+        'laundry_description',
+        'laundry_price',
         'user_id',
+    ];
+
+    protected $casts = [
+        'total_harga' => 'integer',
+        'berat_laundry' => 'integer',
+        "laundry_id" => 'integer',
+        "user_id" => 'integer',
     ];
 
     public function transactions(): BelongsTo
     {
-        return $this->belongsTo(Transaction::class);
+        return $this->belongsTo(TransactionHistory::class);
     }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function laundry(): BelongsTo
-    {
-        return $this->belongsTo(Laundry::class);
     }
 }

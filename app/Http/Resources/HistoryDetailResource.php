@@ -27,7 +27,12 @@ class HistoryDetailResource extends JsonResource
             'tanggal_pemesanan' => $this->created_at,
             'tanggal_pengambilan' => $this->tanggal_pengambilan,
             'tanggal_estimasi' => $this->tanggal_estimasi,
-            'laundry_service' => optional($this->laundry)->first()->only(['id', 'nama_laundry', 'deskripsi', 'harga']),
+            'catatan' => $this->catatan,
+            'status' => $this->status,
+            'laundry_service' => $this->laundry_service,
+            'laundry_description' => $this->laundry_description,
+            'laundry_price' => $this->laundry_price,
+            'user_id' => $this->user_id,
         ];
     }
 }

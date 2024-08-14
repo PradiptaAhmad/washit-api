@@ -17,6 +17,7 @@ class LaundryController extends Controller
             'deskripsi' => $request->deskripsi,
             'harga' => $request->harga,
             'estimasi_waktu' => $request->estimasi_waktu,
+            'is_active' => $request->is_active,
         ]);
 
         return response([
@@ -35,6 +36,7 @@ class LaundryController extends Controller
             'deskripsi' => $request->deskripsi,
             'harga' => $request->harga,
             'estimasi_waktu' => $request->estimasi_waktu,
+            'is_active' => $request->is_active,
         ]);
         return response([
             'status' => 'success',
@@ -59,9 +61,10 @@ class LaundryController extends Controller
 
     public function getLaundryServices()
     {
-        $laundry = Laundry::all();
+        $laundry = Laundry::where('is_active', true)->get();
         if ($laundry == null) {
             return response([
+                'status' => 'failed',
                 'message' => 'Empty laundry services list',
             ], 200);
         } else {
