@@ -39,10 +39,17 @@ class OrderController extends Controller
         $date = date('YmdHis');
         $nomor_pemesanan = $user->id . $request->laundry_id . $date;
         $laundry = Laundry::where('id', $request->laundry_id)->first();
+
+        if ($laundry->is_active == false) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Laundry Service is not available'
+            ], 400);
+        }
         $estimasi = $laundry->estimasi_waktu;
         $estimatedDate = Carbon::now()->addDays($estimasi);
         $address = Address::where('id', $request->address_id)->first();
-        $alamat = $address->street . ', Kel. ' . $address->village . ', Kec. ' . $address->district . ', ' . $address->city . ', ' . $address->province;
+        $alamat = $address->street . ', Kel. ' . $address->village . ', Kec. ' . $address->district . ', ' . $address->postal_code . ', ' . $address->city . ', ' . $address->province;
         $order = Order::create([
             'no_pemesanan' => $nomor_pemesanan,
             'nama_pemesan' => $request->nama_pemesan,
@@ -53,7 +60,9 @@ class OrderController extends Controller
             'metode_pembayaran' => $request->metode_pembayaran,
             'tanggal_pengambilan' => $request->tanggal_pengambilan,
             'tanggal_estimasi' => $estimatedDate,
-            'laundry_id' => $request->laundry_id,
+            'laundry_service' => $laundry->nama_laundry,
+            'laundry_description' => $laundry->deskripsi,
+            'laundry_price' => $laundry->harga,
             'user_id' => $user->id,
         ]);
         $this->updateStatusService->updateStatus($order->id);
@@ -106,40 +115,6 @@ class OrderController extends Controller
         return response([
             'message' => 'Order deleted successfully',
         ], 200);
-    }
-
-    public function updateStatus(Request $request)
-    {
-        $request->validate([
-            'id' => 'required|integer',
-        ]);
-        $auth = Admin::where('email', Auth::guard('admin')->user()->email)->first();
-        $order = Order::where('id', $request->id)->first();
-        if ($order == null) {
-            return response([
-                'status' => 'failed',
-                'message' => 'Order Not Found'
-            ], 301);
-        }
-        OrderStatus::create([
-            'status' => 'success',
-            'status_name' => 'Pesanan Telah Diterima',
-            'status_description' => 'Order Accepted',
-            'order_id' => $order->id,
-        ]);
-        $this->updateStatusService->updateStatus($request->id);
-        $user = $order->user;
-        $title = "Halo " . $user->username . "Pesananmu telah kami terima";
-        $body = '';
-        if ($order->jenis_pemesanan == 'antar_jemput') {
-            $body = "Duduk santai dirumah laundry kamu akan segera diambil";
-        }
-        $body = "Pesanan dengan nomor " . $order->no_pemesanan . " telan kami terima";
-        $message = $this->firebaseService->sendNotification($user->notification_token, $title, $body, '');
-        return response([
-            'status' => 'success',
-            'message' => 'Order Accepted Notifiction sent successfully',
-        ], 201);
     }
 
     // Admin Order Controller
@@ -253,22 +228,27 @@ class OrderController extends Controller
         ]);
         $order = Order::where('id', $request->order_id)->first();
         $transaction = Transaction::where('order_id', $request->order_id)->first();
-        $history = History::create($order->only([
-            'id',
-            'no_pemesanan',
-            'jenis_pemesanan',
-            'nama_pemesan',
-            'nomor_telepon',
-            'alamat',
-            'metode_pembayaran',
-            'berat_laundry',
-            'total_harga',
-            'status',
-            'tanggal_pengambilan',
-            'tanggal_estimasi',
-            'laundry_id',
-            'user_id',
-        ]));
+        $history = History::create(
+            [
+                'id' => $order->id,
+                'no_pemesanan' => $order->no_pemesanan,
+                'jenis_pemesanan' => $order->jenis_pemesanan,
+                'nama_pemesan' => $order->nama_pemesan,
+                'nomor_telepon' => $order->nomor_telepon,
+                'alamat' => $order->alamat,
+                'metode_pembayaran' => $order->metode_pembayaran,
+                'berat_laundry' => $order->berat_laundry,
+                'total_harga' => $order->total_harga,
+                'status' => $order->status,
+                'tanggal_pengambilan' => $order->tanggal_pengambilan,
+                'tanggal_estimasi' =>   $order->tanggal_estimasi,
+                'catatan' => $order->catatan,
+                'laundry_service' => $order->laundry_service,
+                'laundry_description' => $order->laundry_description,
+                'laundry_price' => $order->laundry_price,
+                'user_id' => $order->user_id,
+            ]
+        );
         if ($transaction != null) {
             TransactionHistory::create(
                 [

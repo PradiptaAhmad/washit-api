@@ -123,6 +123,7 @@ Route::group(['prefix' => 'admin'], function () {
 Route::group(['prefix' => '/histories', 'middleware' => ['auth:user', 'scope:user']], function () {
     Route::get('/all', [HistoryController::class, 'getHistory']);
     Route::get('/detail', [HistoryController::class, 'getHistoryDetail']);
+    Route::get('/filter/date', [HistoryController::class, 'filterHistoryByDate']);
     Route::delete('/delete/{id}', [HistoryController::class, 'deleteHistory']);
 });
 

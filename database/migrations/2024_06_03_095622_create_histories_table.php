@@ -21,14 +21,16 @@ return new class extends Migration
             $table->string("metode_pembayaran")->default("tunai");
             $table->integer("berat_laundry")->nullable();
             $table->integer("total_harga")->nullable();
+            $table->text('catatan')->nullable();
             $table->enum('status', ['process', 'completed', 'canceled'])->default('process');
             $table->timestamp("tanggal_pengambilan")->nullable();
             $table->timestamp('tanggal_estimasi')->nullable();
-            $table->unsignedBigInteger("laundry_id")->default(0);
+            $table->string('laundry_service')->nullable();
+            $table->string('laundry_description')->nullable();
+            $table->integer('laundry_price')->nullable();
             $table->unsignedBigInteger("user_id")->default(0);
             $table->timestamps();
 
-            $table->foreign("laundry_id")->references("id")->on("laundries")->onDelete("cascade");
             $table->foreign("user_id")->references("id")->on("users")->onDelete("cascade");
         });
     }
@@ -39,7 +41,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('histories', function (Blueprint $table) {
-            $table->dropForeign(["laundry_id"]);
             $table->dropForeign(["user_id"]);
         });
         Schema::dropIfExists('histories');

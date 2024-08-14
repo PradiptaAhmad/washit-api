@@ -22,7 +22,11 @@ class HistoryController extends Controller
                 'message' => 'No history found',
             ]);
         }
-        return HistoryResource::collection($histories);
+        return response([
+            'status' => 'success',
+            'message' => 'History fetched successfully',
+            'data' => HistoryResource::collection($histories),
+        ]);
     }
 
     public function getHistoryDetail(Request $request)
@@ -64,6 +68,22 @@ class HistoryController extends Controller
         return response([
             'status' => 'success',
             'data' => new AdminHistoryDetailResource($history),
+        ]);
+    }
+
+    public function filterHistoryByDate(Request $request)
+    {
+        $user = $request->user();
+        $request->validate([
+            'date' => 'required|date',
+        ]);
+        $histories = History::where('user_id', $user->id)
+            ->whereDate('created_at', $request->date)
+            ->get();
+        return response([
+            'status' => 'success',
+            'message' => 'History fetched successfully',
+            'data' => HistoryResource::collection($histories),
         ]);
     }
 }

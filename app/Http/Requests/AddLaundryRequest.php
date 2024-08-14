@@ -25,7 +25,8 @@ class AddLaundryRequest extends FormRequest
             'nama_laundry' => 'required|string',
             'deskripsi' => 'required|string',
             'harga' => 'required|integer',
-            'estimasi_waktu' => 'required|integer'
+            'estimasi_waktu' => 'required|integer',
+            'is_active' => 'required|integer'
         ];
     }
 }
