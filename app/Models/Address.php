@@ -17,6 +17,7 @@ class Address extends Model
         'postal_code',
         'street',
         'type',
+        'notes',
         'is_primary',
         'user_id',
     ];

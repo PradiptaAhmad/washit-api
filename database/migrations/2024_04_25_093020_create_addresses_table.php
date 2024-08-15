@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('postal_code');
             $table->string('street');
             $table->string('type');
+            $table->string('notes')->nullable();
             $table->boolean('is_primary')->default(false);
             $table->unsignedBigInteger('user_id');
             $table->timestamps();

@@ -180,6 +180,7 @@ class AddressController extends Controller
             'street' => $request->street,
             'type' => $request->type,
             'is_primary' => $request->is_primary,
+            'notes' => $request->notes,
             'user_id' => $user->id,
         ]);
 
@@ -219,6 +220,7 @@ class AddressController extends Controller
             'village' => 'required|string',
             'street' => 'required|string',
             'type' => 'required|string',
+            'notes' => 'nullable|string',
             'is_primary' => 'nullable|boolean',
         ]);
         $address = Address::where('user_id', $user->id)->where('id', $request->id)->first();
