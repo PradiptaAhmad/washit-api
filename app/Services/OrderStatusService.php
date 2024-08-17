@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\History;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\Payment;
+use App\Models\Transaction;
+use App\Models\TransactionHistory;
 
 /**
  * Class OrderStatusService.
@@ -181,6 +184,7 @@ class OrderStatusService
         $order->save();
 
         $this->createOrderStatus($id, 'failed', '99', 'Pesanan Dibatalkan');
+        $this->toHistory($order->id);
         $this->firebaseService->sendNotification($order->user->notification_token, 'Pesanan Dibatalkan', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Telah dibatalkan', '', ['route' => '/transaction-page', 'data' => $order->id]);
         return true;
 
@@ -196,6 +200,52 @@ class OrderStatusService
             return true;
         }
 
+    }
+
+    public function toHistory($id)
+    {
+        $order = Order::where('id', $id)->first();
+        $transaction = Transaction::where('order_id', $id)->first();
+        $history = History::create(
+            [
+                'id' => $order->id,
+                'no_pemesanan' => $order->no_pemesanan,
+                'jenis_pemesanan' => $order->jenis_pemesanan,
+                'nama_pemesan' => $order->nama_pemesan,
+                'nomor_telepon' => $order->nomor_telepon,
+                'alamat' => $order->alamat,
+                'metode_pembayaran' => $order->metode_pembayaran,
+                'berat_laundry' => $order->berat_laundry,
+                'total_harga' => $order->total_harga,
+                'status' => $order->status,
+                'tanggal_pengambilan' => $order->tanggal_pengambilan,
+                'tanggal_estimasi' =>   $order->tanggal_estimasi,
+                'catatan' => $order->catatan,
+                'laundry_service' => $order->laundry_service,
+                'laundry_description' => $order->laundry_description,
+                'laundry_price' => $order->laundry_price,
+                'user_id' => $order->user_id,
+            ]
+        );
+        if ($transaction != null) {
+            TransactionHistory::create(
+                [
+                    'id' => $transaction->id,
+                    'payment_type' => $transaction->payment_type,
+                    'external_id' => $transaction->external_id,
+                    'payment_method' => $transaction->payment_method,
+                    'status' => $transaction->status,
+                    'amount' => $transaction->amount,
+                    'payment_id' => $transaction->payment_id,
+                    'payment_channel' => $transaction->payment_channel,
+                    'description' => $transaction->description,
+                    'paid_at' => $transaction->paid_at,
+                    'history_id' => $order->id,
+                ]
+            );
+            $transaction->delete();
+        }
+        $order->delete();
     }
 
 }

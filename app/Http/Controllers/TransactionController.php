@@ -12,9 +12,11 @@ use Illuminate\Http\Request;
 class TransactionController extends Controller
 {
     protected $firebaseService;
+    protected $chartController;
     public function __construct(FirebaseService $firebaseService)
     {
         $this->firebaseService = $firebaseService;
+        $this->chartController = new TransactionChartController();
     }
     public function invoiceStatus(Request $request)
     {
@@ -59,6 +61,7 @@ class TransactionController extends Controller
 
         if (strtolower($request->status) == 'paid') {
             $this->firebaseService->sendNotification($payment->user->notification_token, 'Pembayaran Berhasil', 'Pembayaran untuk laundry ' . $payment->order->no_pemesanan . '. Telah terbayarkan', '');
+            $this->chartController->updateChart();
         }
 
         return response([

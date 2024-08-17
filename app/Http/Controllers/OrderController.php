@@ -21,11 +21,13 @@ class OrderController extends Controller
 {
     protected $firebaseService;
     protected $updateStatusService;
+    protected $orderChart;
 
     public function __construct(FirebaseService $firebaseService, OrderStatusService $updateStatusService)
     {
         $this->firebaseService = $firebaseService;
         $this->updateStatusService = $updateStatusService;
+        $this->orderChart = new OrderChartController();
     }
     public function addOrder(OrderRequest $request)
     {
@@ -62,6 +64,7 @@ class OrderController extends Controller
             'user_id' => $user->id,
         ]);
         $this->updateStatusService->updateStatus($order->id);
+        $this->orderChart->updateChart();
         $this->firebaseService->sendToAdmin("Ada Pesanan Baru", "Ada Pesanan Baru Dari " . $user->username, '', ['route' => '/transaction_page.screen', 'data' => $order->id]);
         return response([
             'status' => 'success',
@@ -127,7 +130,7 @@ class OrderController extends Controller
                 'message' => 'Order Not Found'
             ], 400);
         }
-        $totalPrice = $order->laundry->harga * $request->berat_laundry;
+        $totalPrice = $order->laundry_price * $request->berat_laundry;
         $order->berat_laundry = $request->berat_laundry;
         $order->total_harga = $totalPrice;
         $order->save();
