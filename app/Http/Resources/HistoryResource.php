@@ -25,6 +25,7 @@ class HistoryResource extends JsonResource
             'nama_pemesan' => $this->nama_pemesan,
             'berat_laundry' => $this->berat_laundry,
             'total_harga' => $this->total_harga,
+            'status' => $this->status,
         ];
     }
 }

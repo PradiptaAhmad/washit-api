@@ -13,7 +13,10 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\BannedUserController;
 use App\Http\Controllers\OrderStatusController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OrderChartController;
+use App\Http\Controllers\TransactionChartController;
 use App\Http\Controllers\TransactionController;
+use App\Models\TransactionChart;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -56,6 +59,7 @@ Route::group(['prefix' => 'orders', 'middleware' => ['auth:user', 'scope:user']]
     Route::post('/update', [OrderController::class, 'updateStatus']);
     Route::get('/detail', [OrderController::class, 'getOrderDetail']);
     Route::put('/complete', [OrderController::class, 'completeOrder']);
+    Route::put('/cancel', [OrderController::class, 'cancelOrder']);
     Route::delete('/delete/{id}', [OrderController::class, 'deleteOrder']);
 
     Route::group(['prefix' => '/status'], function () {
@@ -90,7 +94,6 @@ Route::group(['prefix' => 'admin'], function () {
         Route::group(['prefix' => 'orders'], function () {
             Route::get('/all', [OrderController::class, 'getAllOrders']);
             Route::get('/detail', [OrderController::class, 'getAdminDetailOrder']);
-            Route::get('/chart', [OrderController::class, 'getChartData']);
             Route::put('/cancel', [OrderController::class, 'cancelOrder']);
             Route::put('/update-weight', [OrderController::class, 'updateWeight']);
             Route::put('/status/update', [OrderStatusController::class, 'updateOrderStatus']);
@@ -156,14 +159,12 @@ Route::group(['prefix' => 'ratings', 'middleware' => ['auth:user', 'scope:user']
 });
 
 Route::group(['prefix' => 'addresses'], function () {
-
     Route::middleware(['auth:user', 'scope:user'])->group(function () {
         Route::post('/add', [AddressController::class, 'addAddress']);
         Route::get('/get', [AddressController::class, 'getAddressPerUser']);
         Route::put('/edit', [AddressController::class, 'editAddress']);
         Route::delete('/delete', [AddressController::class, 'deleteAddress']);
     });
-
     Route::group(['prefix' => 'get'], function () {
         Route::get('/search', [AddressController::class, 'getAddressByCode']);
         Route::get('/provinces', [AddressController::class, 'getProvince']);
@@ -174,6 +175,18 @@ Route::group(['prefix' => 'addresses'], function () {
     });
 });
 
+Route::group(['prefix' => 'charts', 'middleware' => ['auth:admin', 'scope:admin']], function () {
+    Route::prefix('orders')->group(function () {
+        Route::get('/daily', [OrderChartController::class, 'getDailyChart']);
+        Route::get('/weekly', [OrderChartController::class, 'getWeeklyChart']);
+        Route::get('/monthly', [OrderChartController::class, 'getMonthlyChart']);
+    });
+    Route::prefix('transactions')->group(function () {
+        Route::get('/daily', [TransactionChartController::class, 'getDailyChart']);
+        Route::get('/weekly', [TransactionChartController::class, 'getWeeklyChart']);
+        Route::get('/monthly', [TransactionChartController::class, 'getMonthlyChart']);
+    });
+});
 Route::group(['prefix' => 'transaction', 'middleware' => ['auth:user', 'scope:user']], function () {
     Route::get('/get', [TransactionController::class, 'getTransaction']);
 });
