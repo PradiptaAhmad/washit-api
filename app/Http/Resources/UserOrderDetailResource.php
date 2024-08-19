@@ -24,6 +24,7 @@ class UserOrderDetailResource extends JsonResource
             'metode_pembayaran' => $this->metode_pembayaran,
             'berat_laundry' => $this->berat_laundry,
             'catatan' => $this->catatan,
+            'catatan_alamat' => $this->catatan_alamat,
             'status' => $this->status,
             'total_harga' => $this->total_harga,
             'tanggal_pemesanan' => $this->created_at,

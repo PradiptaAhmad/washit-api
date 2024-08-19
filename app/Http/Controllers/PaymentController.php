@@ -29,7 +29,7 @@ class PaymentController extends Controller
         $user = auth()->user();
         $order = Order::where('id', $request->order_id)->first();
         $external_id = (string) date('YmdHis');
-        $description = 'Membayar Laundry ' . $order->laundry_service . ' ' . $user->username;
+        $description = $order->laundry_service . ' ' . $user->username;
 
         if ($order->total_harga == null) {
             return response([

@@ -18,6 +18,7 @@ class Order extends Model
         'alamat',
         'total_harga',
         'catatan',
+        'catatan_alamat',
         'status',
         'tanggal_pengambilan',
         'tanggal_estimasi',
