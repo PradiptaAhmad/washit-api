@@ -15,6 +15,7 @@
   ],
   "require": {
     "php": "^8.2",
+    "erlandmuchasaj/laravel-gzip": "^1.1",
     "kreait/firebase-php": "^7.0.0",
     "kreait/laravel-firebase": "5.8.0",
     "laravel/framework": "^11.0",

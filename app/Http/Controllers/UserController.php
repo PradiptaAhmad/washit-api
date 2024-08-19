@@ -186,8 +186,7 @@ class UserController extends Controller
 
     public function updateProfilePicture(Request $request)
     {
-        $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        $request->validate(['image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
         ]);
 
         $user = User::where('email', auth()->user()->email)->first();

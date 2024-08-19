@@ -161,6 +161,8 @@ Route::group(['prefix' => 'ratings', 'middleware' => ['auth:user', 'scope:user']
 Route::group(['prefix' => 'addresses'], function () {
     Route::middleware(['auth:user', 'scope:user'])->group(function () {
         Route::post('/add', [AddressController::class, 'addAddress']);
+        Route::get('/primary', [AddressController::class, 'getPrimaryAddress']);
+        Route::get('/detail', [AddressController::class, 'getAddressDetail']);
         Route::get('/get', [AddressController::class, 'getAddressPerUser']);
         Route::put('/edit', [AddressController::class, 'editAddress']);
         Route::delete('/delete', [AddressController::class, 'deleteAddress']);

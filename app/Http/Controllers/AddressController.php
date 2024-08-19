@@ -191,6 +191,43 @@ class AddressController extends Controller
         ], 201);
     }
 
+    public function getPrimaryAddress()
+    {
+        $user = request()->user();
+        $address = Address::where('user_id', $user->id)->where('is_primary', 1)->first();
+        if ($address == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Primary address not found',
+            ], 404);
+        }
+        return response([
+            'status' => 'success',
+            'message' => 'Get primary address success',
+            'data' => $address,
+        ], 200);
+    }
+
+    public function getAddressDetail(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:addresses,id',
+        ]);
+        $user = $request->user();
+        $address = Address::where('user_id', $user->id)->where('id', $request->id)->first();
+        if ($address == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Address not found',
+            ], 404);
+        }
+        return response([
+            'status' => 'success',
+            'message' => 'Get address success',
+            'data' => $address,
+        ], 200);
+    }
+
     public function getAddressPerUser(Request $request)
     {
         $user = $request->user();

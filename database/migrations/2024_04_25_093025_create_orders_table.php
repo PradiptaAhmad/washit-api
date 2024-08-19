@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer("berat_laundry")->nullable();
             $table->integer("total_harga")->nullable();
             $table->text('catatan')->nullable();
+            $table->text('catatan_alamat')->nullable();
             $table->enum('status', ['process', 'completed', 'canceled'])->default('process');
             $table->timestamp("tanggal_pengambilan")->nullable();
             $table->timestamp('tanggal_estimasi')->nullable();
