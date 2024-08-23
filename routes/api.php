@@ -25,13 +25,13 @@ use App\Models\TransactionChart;
 Route::group(['prefix' => 'users'], function () {
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
+    Route::post('/google/login', [UserController::class, 'googleLogin']);
+    Route::get('/google/callback', [UserController::class, 'googleCallback']);
 
     Route::group(['middleware' => ['auth:user', 'scope:user']], function () {
         Route::get('/me', [UserController::class, 'details']);
         Route::post('/update-profile-picture', [UserController::class, 'updateProfilePicture']);
         Route::post('/logout', [UserController::class, 'logout']);
-        Route::get('/google/login', [UserController::class, 'googleLogin']);
-        Route::get('/google/callback', [UserController::class, 'googleCallback']);
 
         Route::group(['prefix' => 'update',], function () {
             Route::post('/username', [UserController::class, 'updateUsername']);
