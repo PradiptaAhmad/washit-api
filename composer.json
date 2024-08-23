@@ -22,6 +22,7 @@
     "laravel/passport": "^12.2",
     "laravel/reverb": "@beta",
     "laravel/sanctum": "^4.0",
+    "laravel/socialite": "^5.15",
     "laravel/tinker": "^2.9",
     "xendit/xendit-php": "5.0.0"
   },

@@ -9,7 +9,9 @@ use App\Models\Otp;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
+use Laravel\Socialite\Facades\Socialite;
 
 class UserController extends Controller
 {
@@ -269,6 +271,50 @@ class UserController extends Controller
                 'message' => 'OTP verification failed',
             ], 401);
         }
+    }
+
+    public function googleLogin(Request $request)
+    {;
+        try {
+            $googleUser = Socialite::driver('google')->userFromToken($request->token);
+        } catch (\Exception $e) {
+            dd($e);
+            return response([
+                'status' => 'failed',
+                'message' => 'Invalid credentials',
+            ], 401);
+        }
+        $user = User::where('email', $googleUser->email)->first();
+
+        if ($user == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'Invalid credentials',
+            ], 401);
+        }
+
+        if ($user->email_verified_at == null && $googleUser->user['email_verified'] == true) {
+            $user->email_verified_at = now();
+            $user->save();
+        }
+
+        if ($googleUser->avatar != null) {
+            if ($user->image_path != null) {
+                File::delete(storage_path(storage_path($user->image_path)));
+            }
+            $image = file_get_contents($googleUser->avatar);
+            $imageName = time() . '.png';
+            file_put_contents(storage_path('app/public/images/' . $imageName), $image);
+            $user->image_path = $imageName;
+            $user->save();
+        }
+
+        $token = $user->createToken('wash_it', ['user'])->accessToken;
+        return response([
+            'status' => 'success',
+            'user' => $user,
+            'token' => $token,
+        ], 200);
     }
 
 }
