@@ -117,8 +117,7 @@ class UserController extends Controller
     }
 
     public function updateEmail(Request $request) {
-        $request->validate([
-            'email' => 'required|string|email|max:255|unique:users',
+        $request->validate(['email' => 'required|string|email|max:255|unique:users,email',
         ]);
 
         $user = User::where('email', auth()->user()->email)->first();
@@ -127,13 +126,9 @@ class UserController extends Controller
                 'status' => 'failed',
                 'message' => 'Email Cannot be the same as the previous one',
             ], 409);
-        } elseif (User::where('email', $request->email)->first() != null) {
-            return response([
-                'status' => 'failed',
-                'message' => 'Email already exists',
-            ], 409);
         }
         $user->email = $request->email;
+        $user->email_verified_at = null;
         $user->save();
 
         return response([
