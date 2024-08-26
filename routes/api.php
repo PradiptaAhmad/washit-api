@@ -79,10 +79,12 @@ Route::group(['prefix' => 'admin'], function () {
         Route::put('/update', [AdminController::class, 'editAccount'])->middleware(['auth:admin', 'scope:admin']);
         Route::post('/update/profile-picture', [AdminController::class, 'updateProfilePicture'])->middleware(['auth:admin', 'scope:admin']);
         Route::get('/details', [AdminController::class, 'adminDetails'])->middleware(['auth:admin', 'scope:admin']);
+
         Route::delete('/logout', [AdminController::class, 'logout'])->middleware(['auth:admin', 'scope:admin']);
     });
 
     Route::middleware(['auth:admin', 'scope:admin'],)->group(function () {
+        Route::put('/toggle/status', [AdminController::class, 'toggleStatus']);
         Route::group(['prefix' => '/laundry'], function () {
             Route::post('/add', [LaundryController::class, 'addLaundryServices']);
             Route::put('/update', [LaundryController::class, 'updateLaundry']);

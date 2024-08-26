@@ -137,5 +137,33 @@ class AdminController extends Controller
         ], 200);
     }
 
+    public function toggleStatus()
+    {
+        $admin = Auth::guard('admin')->user();
+        if ($admin->status == 'online') {
+            $admin->status = 'offline';
+            $admin->save();
+            return response(
+                [
+                    'status' => 'success',
+                    'message' => 'Admin is now offline',
+                    'admin' => $admin,
+                ],
+                200
+            );
+        } else {
+            $admin->status = 'online';
+            $admin->save();
+            return response(
+                [
+                    'status' => 'success',
+                    'message' => 'Admin is now online',
+                    'admin' => $admin,
+                ],
+                200
+            );
+        }
+    }
+
 
 }
