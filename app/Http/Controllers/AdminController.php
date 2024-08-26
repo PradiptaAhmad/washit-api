@@ -9,7 +9,9 @@ use App\Models\Order;
 use App\Http\Requests\LoginRequests;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\BanUserRequest;
+use App\Http\Requests\EditAdminRequest;
 use App\Http\Requests\RegisterRequest;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
@@ -99,6 +101,40 @@ class AdminController extends Controller
             ],
             200
         );
+    }
+
+    public function editAccount(EditAdminRequest $request)
+    {
+        $admin = $request->user();
+        $request->validated();
+        $admin->update($request->all());
+        return response(
+            [
+                'status' => 'success',
+                'message' => 'Account updated successfully',
+                'admin' => $admin,
+            ],
+            200
+        );
+    }
+
+    public function updateProfilePicture(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        $user = $request->user();
+        $image = $request->file('image');
+        $imageName = time() . '.' . $image->extension();
+        $image->move(storage_path('/app/public/images/'), $imageName);
+        $user->image_path = $imageName;
+        $user->save();
+
+        return response([
+            'status' => 'success',
+            'message' => 'Profile Picture updated',
+            'user' => $user,
+        ], 200);
     }
 
 

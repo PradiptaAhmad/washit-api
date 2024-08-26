@@ -310,6 +310,8 @@ class UserController extends Controller
         }
 
         $token = $user->createToken('wash_it', ['user'])->accessToken;
+        $user->notification_token = $request->notification_token;
+        $user->save();
         return response([
             'status' => 'success',
             'user' => $user,
