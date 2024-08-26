@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OrderChartWeeklyResource;
 use App\Models\Order;
 use App\Models\OrderChart;
-use Illuminate\Http\Request;
 
 class OrderChartController extends Controller
 {
@@ -52,13 +52,14 @@ class OrderChartController extends Controller
         }
         return response([
             'status' => 'success',
-            'data' => $orderChart,
+            'data' => OrderChartWeeklyResource::collection($orderChart),
         ]);
     }
 
     public function getMonthlyChart()
     {
         $orderChart = OrderChart::whereMonth('created_at', now()->format('m'))->get();
+        $data = [];
         if ($orderChart == null) {
             return response([
                 'status' => 'failed',
