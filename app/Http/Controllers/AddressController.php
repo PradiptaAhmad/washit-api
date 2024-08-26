@@ -292,7 +292,7 @@ class AddressController extends Controller
             ], 404);
         }
         $address->delete();
-        
+
         if($address->is_primary == true) {
             Address::where('user_id', $user->id)->latest()->first()->update(['is_primary' => 1]);
         }

@@ -76,6 +76,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::group(['prefix' => 'accounts'], function () {
         Route::post('/login', [AdminController::class, 'login']);
         Route::post('/register', [AdminController::class, 'register']);
+        Route::put('/update', [AdminController::class, 'editAccount'])->middleware(['auth:admin', 'scope:admin']);
+        Route::post('/update/profile-picture', [AdminController::class, 'updateProfilePicture'])->middleware(['auth:admin', 'scope:admin']);
         Route::get('/details', [AdminController::class, 'adminDetails'])->middleware(['auth:admin', 'scope:admin']);
         Route::delete('/logout', [AdminController::class, 'logout'])->middleware(['auth:admin', 'scope:admin']);
     });
