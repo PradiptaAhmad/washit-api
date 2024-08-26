@@ -27,6 +27,6 @@ class DeleteExpiredOTP extends Command
      */
     public function handle()
     {
-        Otp::where('created_at', '>', Carbon::now()->subMinutes(5))->delete();
+        Otp::where('created_at', '<', Carbon::now()->subMinutes(5))->delete();
     }
 }
