@@ -15,4 +15,8 @@ class Rating extends Model
         'history_id',
         'user_id'
     ];
+
+    protected $casts = [
+        'rating' => 'double'
+    ];
 }
