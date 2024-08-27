@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TransactionChartMonthlyResource;
+use App\Http\Resources\TransactionChartWeeklyResource;
 use App\Models\Transaction;
 use App\Models\TransactionChart;
 use App\Models\TransactionHistory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TransactionChartController extends Controller
 {
@@ -57,13 +60,16 @@ class TransactionChartController extends Controller
             'status' => 'success',
             'message' => 'Transaction chart retrieved successfully',
             'total_income' => $transactionChart->sum('total_income'),
-            'data' => $transactionChart,
+            'data' => TransactionChartWeeklyResource::collection($transactionChart),
         ]);
     }
 
     public function getMonthlyChart()
     {
-        $transactionChart = TransactionChart::whereMonth('created_at', now()->month)->get();
+        $transactionChart = TransactionChart::select(DB::raw('WEEK(created_at) - WEEK(DATE_SUB(created_at, INTERVAL DAYOFMONTH(created_at) - 1 DAY)) + 1 as week_number, COUNT("total_transactions") as count, SUM(total_income) as income'))
+        ->whereMonth('created_at', now()->format('m'))
+            ->groupBy('week_number')
+            ->get();
         if ($transactionChart == null) {
             return response([
                 'status' => 'failed',
@@ -73,8 +79,8 @@ class TransactionChartController extends Controller
         return response([
             'status' => 'success',
             'message' => 'Transaction chart retrieved successfully',
-            'total_income' => $transactionChart->sum('total_income'),
-            'data' => $transactionChart,
+            'total_income' => $transactionChart->sum('income'),
+            'data' => TransactionChartMonthlyResource::collection($transactionChart),
         ]);
     }
 

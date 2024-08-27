@@ -13,4 +13,9 @@ class TransactionChart extends Model
         'total_transactions',
         'total_income',
     ];
+
+    protected $casts = [
+        'total_transactions' => 'integer',
+        'total_income' => 'integer',
+    ];
 }
