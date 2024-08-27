@@ -15,8 +15,7 @@ class OrderChartWeeklyResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'total_orders' => $this->total_transactions,
-            'total_income' => $this->total_income,
+            'total_orders' => $this->total_orders,
             'created_at' => $this->created_at->translatedFormat('l'),
         ];
     }
