@@ -114,7 +114,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::group(['prefix' => 'ratings'], function () {
             Route::get('/all', [RatingController::class, 'getAllRatings']);
             Route::get('/summary', [RatingController::class, 'getRatingSummary']);
-            Route::delete('/delete/{id}', [RatingController::class, 'deleteRating']);
+            Route::delete('/delete', [RatingController::class, 'deleteRating']);
         });
 
         Route::group(['prefix' => 'histories'], function () {

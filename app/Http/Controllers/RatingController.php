@@ -22,7 +22,7 @@ class RatingController extends Controller
         $rating = Rating::create([
             'rating' => $request->rating,
             'review' => $request->review,
-            'history' => $request->order_id,
+            'history' => $request->history_id,
             'user_id' => $user->id,
         ]);
 
@@ -51,9 +51,11 @@ class RatingController extends Controller
         ], 200);
     }
 
-    public function deleteRating($id)
+    public function deleteRating(Request $request)
     {
-        $rating = Rating::where('id', $id)->first();
+        $request->validate(['id' => 'required|integer|exists:ratings,id',
+        ]);
+        $rating = Rating::where('id', $request->id)->first();
         if ($rating == null) {
             return response([
                 'status' => 'failed',
@@ -70,29 +72,22 @@ class RatingController extends Controller
     public function getRatingSummary()
     {
         $rating = Rating::all();
-        if ($rating == null) {
+        if ($rating->isEmpty()) {
             return response([
                 'status' => 'failed',
                 'message' => 'Rating not found',
             ], 404);
         }
-        $totalRating = 0;
-        $totalReview = 0;
-        foreach ($rating as $r) {
-            $totalRating += $r->rating;
-            $totalReview++;
-        }
-        $averageRating = $totalRating / $totalReview;
         return response([
             'status' => 'success',
             'message' => 'Get summary rating successfully',
-            'average_rating' => $averageRating,
-            'total_review' => $totalReview,
+            'average_rating' => round($rating->avg('rating'), 1),
+            'total_review' => $rating->count(),
         ], 200);
     }
 
 
-    public function getAllRating()
+    public function getAllRatings()
     {
         $rating = Rating::all();
         if ($rating == null) {

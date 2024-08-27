@@ -24,7 +24,7 @@ class AddRatingRequest extends FormRequest
         return [
             'rating' => 'required|regex:/^\d+(\.\d{1,2})?$/',
             'review' => 'required|string',
-            'order_id' => 'required|integer|exists:orders,id',
+            'history_id' => 'required|integer|exists:histories,id',
         ];
     }
 }
