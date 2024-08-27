@@ -2,18 +2,17 @@
 
 namespace App\Console\Commands;
 
+use App\Models\OrderChart;
 use Illuminate\Console\Command;
-use App\Models\Otp;
-use Carbon\Carbon;
 
-class DeleteExpiredOTP extends Command
+class CreateOrderChart extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:delete-expired-o-t-p';
+    protected $signature = 'app:create-order-chart';
 
     /**
      * The console command description.
@@ -27,6 +26,8 @@ class DeleteExpiredOTP extends Command
      */
     public function handle()
     {
-        Otp::where('created_at', '<', Carbon::now()->subMinutes(2))->delete();
+        OrderChart::create([
+            'total_orders' => 0,
+        ]);
     }
 }
