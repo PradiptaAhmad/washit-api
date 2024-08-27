@@ -52,6 +52,7 @@ class OrderChartController extends Controller
         }
         return response([
             'status' => 'success',
+            'total_orders' => $orderChart->sum('total_orders'),
             'data' => OrderChartWeeklyResource::collection($orderChart),
         ]);
     }
