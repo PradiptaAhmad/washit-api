@@ -239,7 +239,7 @@ class OrderController extends Controller
                 'metode_pembayaran' => $order->metode_pembayaran,
                 'berat_laundry' => $order->berat_laundry,
                 'total_harga' => $order->total_harga,
-                'status' => $order->status,
+                'status' => $order->status == 'process' ? 'completed' : $order->status,
                 'tanggal_pengambilan' => $order->tanggal_pengambilan,
                 'tanggal_estimasi' =>   $order->tanggal_estimasi,
                 'catatan' => $order->catatan,
