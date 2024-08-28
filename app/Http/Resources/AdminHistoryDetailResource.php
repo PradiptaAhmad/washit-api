@@ -23,12 +23,16 @@ class AdminHistoryDetailResource extends JsonResource
             'alamat' => $this->alamat,
             'metode_pembayaran' => $this->metode_pembayaran,
             'berat_laundry' => $this->berat_laundry,
+            'catatan' => $this->catatan,
+            'catatan_alamat' => $this->catatan_alamat,
+            'status' => $this->status,
             'total_harga' => $this->total_harga,
             'tanggal_pemesanan' => $this->created_at,
             'tanggal_pengambilan' => $this->tanggal_pengambilan,
-            'tanggal_estimasi' => $this->tanggal_estimasi,
-            'laundry_service' => optional($this->laundry)->first()->only(['id', 'nama_laundry', 'deskripsi', 'harga']),
-            'user' => optional($this->user)->first(),
+            'laundry_service' => $this->laundry_service,
+            'laundry_description' => $this->laundry_description,
+            'laundry_price' => $this->laundry_price,
+            'user' => optional($this->user())->first(),
         ];
     }
 }
