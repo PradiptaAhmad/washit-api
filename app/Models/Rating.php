@@ -19,4 +19,10 @@ class Rating extends Model
     protected $casts = [
         'rating' => 'double'
     ];
+
+
+    public function user()
+    {
+        return $this->belongsTo(User::class)->first();
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddRatingRequest;
+use App\Http\Resources\GetAllRatingResource;
 use App\Models\Rating;
 use Illuminate\Http\Request;
 
@@ -22,7 +23,7 @@ class RatingController extends Controller
         $rating = Rating::create([
             'rating' => $request->rating,
             'review' => $request->review,
-            'history' => $request->history_id,
+            'history_id' => $request->history_id,
             'user_id' => $user->id,
         ]);
 
@@ -99,7 +100,7 @@ class RatingController extends Controller
         return response([
             'status' => 'success',
             'message' => 'Get all rating successfully',
-            'rating' => $rating,
+            'rating' => GetAllRatingResource::collection($rating),
         ], 200);
     }
 
