@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequests;
 use App\Http\Requests\RegisterRequest;
+use App\Models\Admin;
 use App\Models\BannedUser;
 use App\Models\Otp;
 use App\Models\User;
@@ -312,6 +313,24 @@ class UserController extends Controller
             'user' => $user,
             'token' => $token,
         ], 200);
+    }
+
+    public function storeStatus()
+    {
+        $admins = Admin::where('status', 'online')->get();
+        if ($admins->isEmpty()) {
+            return response([
+                'status' => 'failed',
+                'message' => 'store is closed',
+                'status' => 'offline',
+            ], 404);
+        } else {
+            return response([
+                'status' => 'success',
+                'message' => 'store is open',
+                'status' => 'online',
+            ], 200);
+        }
     }
 
 }
