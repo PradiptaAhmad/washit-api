@@ -296,7 +296,7 @@ class UserController extends Controller
 
         if ($googleUser->avatar != null) {
             if ($user->image_path != null) {
-                File::delete(storage_path(storage_path($user->image_path)));
+                File::delete(storage_path('/app/public/images/' . $user->image_path));
             }
             $image = file_get_contents($googleUser->avatar);
             $imageName = time() . '.png';

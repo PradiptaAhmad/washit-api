@@ -26,8 +26,13 @@ class CreateOrderChart extends Command
      */
     public function handle()
     {
-        OrderChart::create([
-            'total_orders' => 0,
-        ]);
+        $orderChart = OrderChart::whereDate('created_at', now()->format('Y-m-d'))->first();
+        if ($orderChart == null) {
+            OrderChart::create([
+                'total_orders' => 0,
+            ]);
+            return;
+        }
+        return;
     }
 }
