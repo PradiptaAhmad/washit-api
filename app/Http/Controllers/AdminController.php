@@ -185,5 +185,25 @@ class AdminController extends Controller
         ], 200);
     }
 
+    public function getUserDetail(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:users,id',
+        ]);
+        $user = User::where('id', $request->id)->first();
+        
+        if ($user == null) {
+            return response([
+                'status' => 'failed',
+                'message' => 'User not found',
+            ], 404);
+        }
+        return response([
+            'status' => 'success',
+            'message' => 'Get user successfully',
+            'user' => $user,
+        ], 200);
+    }
+
 
 }
