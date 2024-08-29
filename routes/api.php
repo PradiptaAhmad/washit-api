@@ -27,6 +27,7 @@ Route::group(['prefix' => 'users'], function () {
     Route::post('/login', [UserController::class, 'login']);
     Route::post('/google/login', [UserController::class, 'googleLogin']);
     Route::get('/google/callback', [UserController::class, 'googleCallback']);
+    Route::get('/store/status', [UserController::class, 'storeStatus']);
 
     Route::group(['middleware' => ['auth:user', 'scope:user']], function () {
         Route::get('/me', [UserController::class, 'details']);
