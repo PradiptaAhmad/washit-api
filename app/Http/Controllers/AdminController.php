@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\BanUserRequest;
 use App\Http\Requests\EditAdminRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Models\Rating;
+use App\Models\Transaction;
+use App\Models\TransactionHistory;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -163,6 +166,23 @@ class AdminController extends Controller
                 200
             );
         }
+    }
+
+    public function homeOverview()
+    {
+        $totalOrder = Order::count();
+        $totalUser = User::count();
+        $totalTransaction = Transaction::sum('amount') + TransactionHistory::sum('amount');
+        $avgRating = round(Rating::avg('rating'), 1);
+
+        return response([
+            'status' => 'success',
+            'message' => 'Overview fetched successfully',
+            'total_orders' => $totalOrder,
+            'total_users' => $totalUser,
+            'total_transactions' => $totalTransaction,
+            'average_ratings' => $avgRating,
+        ], 200);
     }
 
 

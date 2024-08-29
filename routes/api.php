@@ -84,6 +84,7 @@ Route::group(['prefix' => 'admin'], function () {
     });
 
     Route::middleware(['auth:admin', 'scope:admin'],)->group(function () {
+        Route::get('/home/overview', [AdminController::class, 'homeOverview']);
         Route::put('/toggle/status', [AdminController::class, 'toggleStatus']);
         Route::group(['prefix' => '/laundry'], function () {
             Route::get('/all', [LaundryController::class, 'getLaundryServices']);
