@@ -9,5 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 Schedule::command('app:delete-expired-o-t-p')->everyTwoMinutes();
-Schedule::command('app:create-order-chart')->dailyAt('23:59');
-Schedule::command('app:create-transaction-chart')->dailyAt('23:59');
+Schedule::command('app:create-order-chart')->dailyAt('00:01');
+Schedule::command('app:create-transaction-chart')->dailyAt('00:01');

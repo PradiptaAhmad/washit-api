@@ -52,7 +52,7 @@ class HistoryController extends Controller
 
     public function getAdminHistory()
     {
-        $history = History::all();
+        $history = History::paginate(15);
         return response([
             'status' => 'success',
             'data' => HistoryResource::collection($history),
