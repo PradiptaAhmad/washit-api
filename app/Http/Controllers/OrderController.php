@@ -10,6 +10,7 @@ use App\Models\Address;
 use App\Models\History;
 use App\Models\Laundry;
 use App\Models\Order;
+use App\Models\OrderStatus;
 use App\Models\Transaction;
 use App\Models\TransactionHistory;
 use App\Services\FirebaseService;
@@ -143,7 +144,7 @@ class OrderController extends Controller
 
     public function getAllOrders()
     {
-        $orders = Order::all();
+        $orders = Order::paginate(10);
         return response([
             'status' => 'success',
             'message' => 'All Orders Fetched Successfully',
@@ -275,4 +276,64 @@ class OrderController extends Controller
         ]);
     }
 
+    public function filterOrderByStatus(Request $request)
+    {
+
+        $request->validate([
+            'status_code' => 'required|integer',
+        ]);
+        $user = $request->user();
+        if ($user->tokenCan('admin')) {
+            $orders = Order::paginate(10);
+        } else {
+            $orders = Order::where('user_id', $user->id)->paginate(10);
+        }
+        $data = [];
+        foreach ($orders as $order) {
+            if ($order->status()->status_code == $request->status_code) {
+                $data[] = $order;
+            }
+        }
+        return response([
+            'status' => 'success',
+            'message' => 'Order Fetched Successfully',
+            'data' => OrderResource::collection($data),
+        ]);
+    }
+
+    public function filterOrderByDate(Request $request)
+    {
+        $request->validate([
+            'date' => 'required|date',
+        ]);
+        $user = $request->user();
+        if ($user->tokenCan('admin')) {
+            $orders = Order::whereDate('created_at', $request->date)->paginate(10);;
+        } else {
+            $orders = Order::whereDate('created_at', $request->date)->where('user_id', $user->id)->paginate(10);
+        }
+        return response([
+            'status' => 'success',
+            'message' => 'Order Fetched Successfully',
+            'data' => OrderResource::collection($orders),
+        ]);
+    }
+
+    public function filterOrderByService(Request $request)
+    {
+        $request->validate([
+            'service' => 'required|in:antar_jemput,antar_mandiri',
+        ]);
+        $user = $request->user();
+        if ($user->tokenCan('admin')) {
+            $orders = Order::where('jenis_pemesanan', $request->service)->paginate(10);
+        } else {
+            $orders = Order::where('user_id', $user->id)->where('jenis_pemesanan', $request->service)->paginate(10);
+        }
+        return response([
+            'status' => 'success',
+            'message' => 'Order Fetched Successfully',
+            'data' => OrderResource::collection($orders),
+        ]);
+    }
 }

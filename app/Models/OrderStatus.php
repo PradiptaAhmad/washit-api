@@ -22,4 +22,9 @@ class OrderStatus extends Model
         'status_description' => 'string',
         'order_id' => 'integer'
     ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 }
