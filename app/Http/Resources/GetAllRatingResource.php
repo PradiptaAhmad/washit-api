@@ -19,6 +19,8 @@ class GetAllRatingResource extends JsonResource
             'rating' => $this->rating,
             'review' => $this->review,
             'history_id' => $this->history_id,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
             'user' => optional($this->user())->first(),
         ];
     }
