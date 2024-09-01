@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\BanUserRequest;
 use App\Http\Requests\EditAdminRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Models\Address;
 use App\Models\Rating;
 use App\Models\Transaction;
 use App\Models\TransactionHistory;
@@ -191,17 +192,25 @@ class AdminController extends Controller
             'id' => 'required|integer|exists:users,id',
         ]);
         $user = User::where('id', $request->id)->first();
-        
-        if ($user == null) {
-            return response([
-                'status' => 'failed',
-                'message' => 'User not found',
-            ], 404);
-        }
+        $address = Address::where('user_id', $request->id)->where('is_primary', true)->first();
+        $orderCount = Order::where('user_id', $request->id)->count();
+        $response = [
+            'id' => $user->id,
+            'username' => $user->username,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'image_path' => $user->image_path,
+            'phone_verified_at' => $user->phone_verified_at,
+            'email_verified_at' => $user->email_verified_at,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+            'address' => $address != null ? $address->street . ', Kel. ' . $address->village . ', Kec. ' . $address->district . ', ' . $address->city . ', ' . $address->province . ', ' . $address->postal_code : null,
+            'order_count' => $orderCount,
+        ];
         return response([
             'status' => 'success',
             'message' => 'Get user successfully',
-            'user' => $user,
+            'data' => $response,
         ], 200);
     }
 

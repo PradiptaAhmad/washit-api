@@ -47,7 +47,7 @@ class OrderController extends Controller
         $estimasi = $laundry->estimasi_waktu;
         $estimatedDate = Carbon::now()->addDays($estimasi);
         $address = Address::where('id', $request->address_id)->first();
-        $alamat = $address->street . ', Kel. ' . $address->village . ', Kec. ' . $address->district . ', ' . $address->postal_code . ', ' . $address->city . ', ' . $address->province;
+        $alamat = $address->street . ', Kel. ' . $address->village . ', Kec. ' . $address->district . ', ' . $address->city . ', ' . $address->province . ', ' . $address->postal_code;
         $order = Order::create([
             'no_pemesanan' => $nomor_pemesanan,
             'nama_pemesan' => $request->nama_pemesan,
