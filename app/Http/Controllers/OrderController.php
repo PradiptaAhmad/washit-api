@@ -336,4 +336,17 @@ class OrderController extends Controller
             'data' => OrderResource::collection($orders),
         ]);
     }
+
+    public function filterOrderByUser(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+        ]);
+        $orders = Order::where('user_id', $request->user_id)->paginate(10);
+        return response([
+            'status' => 'success',
+            'message' => 'Order Fetched Successfully',
+            'data' => OrderResource::collection($orders),
+        ]);
+    }
 }

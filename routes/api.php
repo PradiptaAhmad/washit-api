@@ -120,6 +120,7 @@ Route::group(['prefix' => 'admin'], function () {
                 Route::get('/date', [OrderController::class, 'filterOrderByDate']);
                 Route::get('/status', [OrderController::class, 'filterOrderByStatus']);
                 Route::get('/service', [OrderController::class, 'filterOrderByService']);
+                Route::get('/user', [OrderController::class, 'filterOrderByUser']);
             });
         });
 
