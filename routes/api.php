@@ -138,6 +138,13 @@ Route::group(['prefix' => 'admin'], function () {
         Route::group(['prefix' => 'histories'], function () {
             Route::get('/all', [HistoryController::class, 'getAdminHistory']);
             Route::get('/detail', [HistoryController::class, 'getDetailAdminHistory']);
+
+            Route::prefix('/filter')->group(function () {
+                Route::get('/date', [HistoryController::class, 'filterHistoryByDate']);
+                Route::get('/status', [HistoryController::class, 'filterHistoryByStatus']);
+                Route::get('/service', [HistoryController::class, 'filterHistoryByService']);
+                Route::get('/user', [HistoryController::class, 'filterHistoryByUser']);
+            });
         });
 
         Route::group(['prefix' => 'transaction'], function () {
@@ -154,6 +161,12 @@ Route::group(['prefix' => '/histories', 'middleware' => ['auth:user', 'scope:use
     Route::get('/filter/date', [HistoryController::class, 'filterHistoryByDate']);
     Route::get('/filter/service', [HistoryController::class, 'filterByService']);
     Route::delete('/delete/{id}', [HistoryController::class, 'deleteHistory']);
+
+    Route::prefix('/filter')->group(function () {
+        Route::get('/date', [HistoryController::class, 'filterHistoryByDate']);
+        Route::get('/status', [HistoryController::class, 'filterHistoryByStatus']);
+        Route::get('/service', [HistoryController::class, 'filterHistoryByService']);
+    });
 });
 
 Route::group(['prefix' => 'notifications', 'middleware' => ['auth:admin', 'scope:admin']], function () {
