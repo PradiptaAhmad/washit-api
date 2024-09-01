@@ -97,6 +97,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::group(['prefix' => 'users'], function () {
             Route::get('/all', [AdminController::class, 'getUser']);
             Route::get('/detail', [AdminController::class, 'getUserDetail']);
+            Route::delete('/delete', [AdminController::class, 'deleteUser']);
             Route::post('/ban', [BannedUserController::class, 'banUser']);
             Route::delete('/unban/{id}', [BannedUserController::class, 'unBanUser']);
         });

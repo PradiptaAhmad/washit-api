@@ -120,7 +120,7 @@ class OrderStatusService
         if ($orderStatus == 4) {
             if ($order->jenis_pemesanan == 'antar_jemput') {
                 if ($order->metode_pembayaran == 'non_tunai') {
-                    if ($this->checkPayment($id)) {
+                    if ($this->checkPayment($id) == false) {
                         return;
                     }
                     $this->createOrderStatus($id, 'success', '4', 'Pembayaran Berhasil');
@@ -139,7 +139,7 @@ class OrderStatusService
             }
             if ($order->jenis_pemesanan == 'antar_mandiri') {
                 if ($order->metode_pembayaran == 'non_tunai') {
-                    if ($this->checkPayment($id)) {
+                    if ($this->checkPayment($id) == false) {
                         return;
                     }
                     $this->createOrderStatus($id, 'success', '4', 'Pembayaran Berhasil');
@@ -192,14 +192,11 @@ class OrderStatusService
 
     public function checkPayment($id)
     {
-        $payment = Payment::where('order_id', $id)->first();
+        $payment = Transaction::where('order_id', $id)->first();
         if ($payment == null) {
             return false;
         }
-        if ($payment->status == 'paid' || $payment->status == 'settled') {
-            return true;
-        }
-
+        return true;
     }
 
     public function toHistory($id)
