@@ -78,9 +78,11 @@ class HistoryController extends Controller
         $request->validate([
             'date' => 'required|date',
         ]);
-        $histories = History::where('user_id', $user->id)
-            ->whereDate('created_at', $request->date)
-            ->get();
+        if ($user->tokenCan('admin')) {
+            $histories = History::whereDate('created_at', $request->date)->paginate(15);
+        } else {
+            $histories = History::where('user_id', $user->id)->whereDate('created_at', $request->date)->paginate(15);
+        }
         return response([
             'status' => 'success',
             'message' => 'History fetched successfully',
@@ -126,13 +128,35 @@ class HistoryController extends Controller
         ]);
     }
 
-    public function filterByService(Request $request)
+    public function filterHistoryByService(Request $request)
     {
         $user = $request->user();
         $request->validate([
             'service' => 'required|in:' . implode(',', ['antar_jemput', 'antar_mandiri']),
         ]);
-        $histories = History::where('user_id', $user->id)->where('jenis_pemesanan', $request->service)->get();
+        if ($user->tokenCan('admin')) {
+            $histories = History::where('jenis_pemesanan', $request->service)->paginate(15);
+        } else {
+            $histories = History::where('user_id', $user->id)->where('jenis_pemesanan', $request->service)->paginate(15);
+        }
+        return response([
+            'status' => 'success',
+            'message' => 'History fetched successfully',
+            'data' => HistoryResource::collection($histories),
+        ]);
+    }
+
+    public function filterHistoryByStatus(Request $request)
+    {
+        $user = $request->user();
+        $request->validate([
+            'status' => 'required|in:' . implode(',', ['completed', 'canceled']),
+        ]);
+        if ($user->tokenCan('admin')) {
+            $histories = History::where('status', $request->status)->paginate(15);
+        } else {
+            $histories = History::where('user_id', $user->id)->where('status', $request->status)->paginate(15);
+        }
         return response([
             'status' => 'success',
             'message' => 'History fetched successfully',
