@@ -160,6 +160,7 @@ class OrderStatusService
         if ($orderStatus == 5) {
             if ($order->jenis_pemesanan == 'antar_jemput') {
                 $this->createOrderStatus($id, 'success', '5', 'Pesanan telah diantar');
+                $this->createTransaction($id);
                 $order->status = 'completed';
                 $order->save();
                 $this->firebaseService->sendNotification($order->user->notification_token, 'Laundrymu sudah sampai', 'Pesananmu nomor ' . $order->no_pemesanan . ' sudah diantar ke alamat ', '', ['route' => '/transaction-page', 'data' => $order->id]);
@@ -167,6 +168,7 @@ class OrderStatusService
             }
             if ($order->jenis_pemesanan == 'antar_mandiri') {
                 $this->createOrderStatus($id, 'success', '5', 'Pesanan telah selesai');
+                $this->createTransaction($id);
                 $this->firebaseService->sendNotification($order->user->notification_token, 'Laundrymu sudah selesai', 'Pesananmu nomor ' . $order->no_pemesanan . ' sudah diantar ke alamat ', '', ['route' => '/transaction-page', 'data' => $order->id]);
                 return;
             }
@@ -243,6 +245,23 @@ class OrderStatusService
             $transaction->delete();
         }
         $order->delete();
+    }
+
+    public function createTransaction($id)
+    {
+        $order = Order::where('id', $id)->first();
+        Transaction::create([
+            'payment_type' => 'tunai',
+            'external_id' => $order->no_pemesanan,
+            'payment_method' => 'tunai',
+            'status' => 'PAID',
+            'amount' => $order->total_harga,
+            'payment_id' => null,
+            'payment_channel' => 'tunai',
+            'description' => 'Pembayaran tunai',
+            'paid_at' => now(),
+            'order_id' => $order->id,
+        ]);
     }
 
 }

@@ -69,6 +69,12 @@ Route::group(['prefix' => 'orders', 'middleware' => ['auth:user', 'scope:user']]
         Route::get('/all', [OrderStatusController::class, 'getOrderStatus']);
         Route::get('/last', [OrderStatusController::class, 'getLastStatus']);
     });
+
+    Route::prefix('/filter')->group(function () {
+        Route::get('/date', [OrderController::class, 'filterOrderByDate']);
+        Route::get('/status', [OrderController::class, 'filterOrderByStatus']);
+        Route::get('/service', [OrderController::class, 'filterOrderByService']);
+    });
 });
 
 Route::get('/laundry/all', [LaundryController::class, 'getLaundryServices'])->middleware(['auth:user', 'scope:user']);
@@ -109,6 +115,12 @@ Route::group(['prefix' => 'admin'], function () {
             Route::put('/update-weight', [OrderController::class, 'updateWeight']);
             Route::put('/status/update', [OrderStatusController::class, 'updateOrderStatus']);
             Route::delete('/status/delete/{id}', [OrderStatusController::class, 'deleteStatus']);
+
+            Route::prefix('/filter')->group(function () {
+                Route::get('/date', [OrderController::class, 'filterOrderByDate']);
+                Route::get('/status', [OrderController::class, 'filterOrderByStatus']);
+                Route::get('/service', [OrderController::class, 'filterOrderByService']);
+            });
         });
 
         Route::group(['prefix' => 'orders/status'], function () {

@@ -42,7 +42,7 @@ class Order extends Model
     }
 
     public function status() {
-        return $this->hasMany(OrderStatus::class);
+        return OrderStatus::where('order_id', $this->id)->latest()->first();
     }
 
     public function transaction() {
