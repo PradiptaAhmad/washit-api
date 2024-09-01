@@ -267,10 +267,10 @@ class AddressController extends Controller
                 'message' => 'Address not found',
             ], 404);
         }
-        if ($request->is_primary == true) {
+        $address->update($request->all());
+        if ($request->is_primary == 1 && $address->is_primary == 0) {
             Address::where('user_id', $user->id)->where('is_primary', 1)->update(['is_primary' => 0]);
         }
-        $address->update($request->all());
         return response([
             'status' => 'success',
             'message' => 'Edit address success',

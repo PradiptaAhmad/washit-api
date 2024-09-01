@@ -214,5 +214,18 @@ class AdminController extends Controller
         ], 200);
     }
 
+    public function deleteUser(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:users,id',
+        ]);
+        $user = User::where('id', $request->id)->first();
+        $user->delete();
+        return response([
+            'status' => 'success',
+            'message' => 'User deleted successfully',
+        ], 200);
+    }
+
 
 }
