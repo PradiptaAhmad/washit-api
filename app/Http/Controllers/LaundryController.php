@@ -59,9 +59,13 @@ class LaundryController extends Controller
         ], 200);
     }
 
-    public function getLaundryServices()
+    public function getLaundryServices(Request $request)
     {
-        $laundry = Laundry::where('is_active', true)->get();
+        if ($request->user()->tokenCan('admin')) {
+            $laundry = Laundry::all();
+        } else {
+            $laundry = Laundry::where('is_active', true)->get();
+        }
         if ($laundry == null) {
             return response([
                 'status' => 'failed',
