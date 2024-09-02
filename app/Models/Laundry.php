@@ -17,8 +17,4 @@ class Laundry extends Model
         'estimasi_waktu' => 'integer',
         'is_active' => 'boolean'
     ];
-
-    protected $hidden = [
-        'is_active',
-    ];
 }
