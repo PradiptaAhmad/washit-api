@@ -29,10 +29,12 @@ class OrderAdminDetailResource extends JsonResource
             'tanggal_pemesanan' => $this->created_at,
             'tanggal_pengambilan' => $this->tanggal_pengambilan,
             'tanggal_estimasi' => $this->tanggal_estimasi,
-            'laundry_service' => optional($this->laundry)->nama_laundry,
+            'laundry_service' => $this->laundry_service,
+            'laundry_description' => $this->laundry_description,
+            'laundry_price' => $this->laundry_price,
             'status' => OrderStatus::where('order_id', $this->id)->latest()->first()->status_description,
             'user' => optional($this->user)->first()->only(['id', 'username', 'email', 'phone']),
-            'transaction' => optional($this->transaction)->first(),
+            'transaction' => optional($this->transaction())->first(),
         ];
     }
 }
