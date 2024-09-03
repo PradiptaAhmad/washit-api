@@ -144,7 +144,7 @@ class OrderController extends Controller
 
     public function getAllOrders()
     {
-        $orders = Order::orderBy('created_at', 'desc')->paginate(20);
+        $orders = Order::orderBy('created_at', 'asc')->paginate(20);
         return response([
             'status' => 'success',
             'message' => 'All Orders Fetched Successfully',
