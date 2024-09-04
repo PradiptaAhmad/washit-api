@@ -144,7 +144,7 @@ class OrderController extends Controller
 
     public function getAllOrders()
     {
-        $orders = Order::orderBy('created_at', 'asc')->paginate(20);
+        $orders = Order::orderBy('created_at', 'desc')->paginate(20);
         return response([
             'status' => 'success',
             'message' => 'All Orders Fetched Successfully',
@@ -284,9 +284,9 @@ class OrderController extends Controller
         ]);
         $user = $request->user();
         if ($user->tokenCan('admin')) {
-            $orders = Order::paginate(10);
+            $orders = Order::orderBy('created_at', 'desc')->paginate(10);
         } else {
-            $orders = Order::where('user_id', $user->id)->paginate(10);
+            $orders = Order::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(10);
         }
         $data = [];
         foreach ($orders as $order) {
@@ -308,9 +308,9 @@ class OrderController extends Controller
         ]);
         $user = $request->user();
         if ($user->tokenCan('admin')) {
-            $orders = Order::whereDate('created_at', $request->date)->paginate(10);;
+            $orders = Order::whereDate('created_at', $request->date)->orderBy('created_at', 'desc')->paginate(10);;
         } else {
-            $orders = Order::whereDate('created_at', $request->date)->where('user_id', $user->id)->paginate(10);
+            $orders = Order::whereDate('created_at', $request->date)->where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(10);
         }
         return response([
             'status' => 'success',
@@ -326,9 +326,9 @@ class OrderController extends Controller
         ]);
         $user = $request->user();
         if ($user->tokenCan('admin')) {
-            $orders = Order::where('jenis_pemesanan', $request->service)->paginate(10);
+            $orders = Order::where('jenis_pemesanan', $request->service)->orderBy('created_at', 'desc')->paginate(10);
         } else {
-            $orders = Order::where('user_id', $user->id)->where('jenis_pemesanan', $request->service)->paginate(10);
+            $orders = Order::where('user_id', $user->id)->where('jenis_pemesanan', $request->service)->orderBy('created_at', 'desc')->paginate(10);
         }
         return response([
             'status' => 'success',
@@ -342,7 +342,7 @@ class OrderController extends Controller
         $request->validate([
             'user_id' => 'required|integer|exists:users,id',
         ]);
-        $orders = Order::where('user_id', $request->user_id)->paginate(10);
+        $orders = Order::where('user_id', $request->user_id)->orderBy('created_at', 'desc')->paginate(10);
         return response([
             'status' => 'success',
             'message' => 'Order Fetched Successfully',
