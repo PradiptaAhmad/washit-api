@@ -15,7 +15,7 @@ class HistoryController extends Controller
     public function getHistory()
     {
         $user = auth()->user();
-        $histories = History::where('user_id', $user->id)->get();
+        $histories = History::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(15);
 
         if ($histories == null) {
             return response([
