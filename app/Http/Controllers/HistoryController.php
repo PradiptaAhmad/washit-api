@@ -52,7 +52,7 @@ class HistoryController extends Controller
 
     public function getAdminHistory()
     {
-        $history = History::paginate(15);
+        $history = History::orderBy('created_at', 'desc')->paginate(15);
         return response([
             'status' => 'success',
             'data' => HistoryResource::collection($history),
@@ -79,9 +79,9 @@ class HistoryController extends Controller
             'date' => 'required|date',
         ]);
         if ($user->tokenCan('admin')) {
-            $histories = History::whereDate('created_at', $request->date)->paginate(15);
+            $histories = History::whereDate('created_at', $request->date)->orderBy('created_at', 'desc')->paginate(15);
         } else {
-            $histories = History::where('user_id', $user->id)->whereDate('created_at', $request->date)->paginate(15);
+            $histories = History::where('user_id', $user->id)->whereDate('created_at', $request->date)->orderBy('created_at', 'desc')->paginate(15);
         }
         return response([
             'status' => 'success',
@@ -135,9 +135,9 @@ class HistoryController extends Controller
             'service' => 'required|in:' . implode(',', ['antar_jemput', 'antar_mandiri']),
         ]);
         if ($user->tokenCan('admin')) {
-            $histories = History::where('jenis_pemesanan', $request->service)->paginate(15);
+            $histories = History::where('jenis_pemesanan', $request->service)->orderBy('created_at', 'desc')->paginate(15);
         } else {
-            $histories = History::where('user_id', $user->id)->where('jenis_pemesanan', $request->service)->paginate(15);
+            $histories = History::where('user_id', $user->id)->where('jenis_pemesanan', $request->service)->orderBy('created_at', 'desc')->paginate(15);
         }
         return response([
             'status' => 'success',
@@ -153,9 +153,9 @@ class HistoryController extends Controller
             'status' => 'required|in:' . implode(',', ['completed', 'canceled']),
         ]);
         if ($user->tokenCan('admin')) {
-            $histories = History::where('status', $request->status)->paginate(15);
+            $histories = History::where('status', $request->status)->orderBy('created_at', 'desc')->paginate(15);
         } else {
-            $histories = History::where('user_id', $user->id)->where('status', $request->status)->paginate(15);
+            $histories = History::where('user_id', $user->id)->where('status', $request->status)->orderBy('created_at', 'desc')->paginate(15);
         }
         return response([
             'status' => 'success',
