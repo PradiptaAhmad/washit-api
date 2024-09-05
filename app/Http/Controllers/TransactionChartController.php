@@ -59,6 +59,7 @@ class TransactionChartController extends Controller
         return response([
             'status' => 'success',
             'message' => 'Transaction chart retrieved successfully',
+            'total_transaction' => $transactionChart->sum('total_transactions'),
             'total_income' => $transactionChart->sum('total_income'),
             'data' => TransactionChartWeeklyResource::collection($transactionChart),
         ]);
@@ -79,6 +80,7 @@ class TransactionChartController extends Controller
         return response([
             'status' => 'success',
             'message' => 'Transaction chart retrieved successfully',
+            'total_transaction' => $transactionChart->sum('total_transactions'),
             'total_income' => $transactionChart->sum('income'),
             'data' => TransactionChartMonthlyResource::collection($transactionChart),
         ]);

@@ -78,7 +78,7 @@ class OrderController extends Controller
     public function getOrder()
     {
         $user = Auth()->user();
-        $order = Order::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+        $order = Order::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(15);
 
         if ($order == null) {
             return response([
