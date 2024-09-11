@@ -2,25 +2,26 @@
 
 namespace App\Events;
 
+use App\Models\Message;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NewMessage implements ShouldBroadcastNow
+class MessageSentAdmin implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $message;
+
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public $message;
+    public function __construct(Message $message)
     {
-        $this->message = 'Hello World';
+        $this->message = $message;
     }
 
     /**
@@ -28,22 +29,18 @@ class NewMessage implements ShouldBroadcastNow
      *
      * @return array<int, \Illuminate\Broadcasting\Channel>
      */
-    public function broadcastOn(): array
+    public function broadcastOn(): Channel
     {
-        return [
-            new Channel('chat'),
-        ];
-    }
-
-    public function broadcastAs(): string
-    {
-        return 'test';
+        return new Channel('chat.admin.'.$this->message->to_user_id);
     }
 
     public function broadcastWith(): array
     {
-        return [
-            'data' => $this->message,
-        ];
+        return $this->message->toArray();
+    }
+
+    public function broadcastAs(): string
+    {
+        return 'MessageSentAdmin';
     }
 }

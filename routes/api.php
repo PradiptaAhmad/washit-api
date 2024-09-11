@@ -148,6 +148,11 @@ Route::group(['prefix' => 'admin'], function () {
             });
         });
 
+        Route::group(['prefix' => 'message'], function () {
+            Route::get('/get', [MessageController::class, 'loadMessage']);
+            Route::post('/send', [MessageController::class, 'sendMessage']);
+        });
+
         Route::group(['prefix' => 'transaction'], function () {
             Route::get('/all', [TransactionController::class, 'getAllTransaction']);
             Route::delete('/delete/{id}', [PaymentController::class, 'deleteTransaction']);
@@ -228,7 +233,7 @@ Route::group(['prefix' => 'charts', 'middleware' => ['auth:admin', 'scope:admin'
     });
 });
 
-Route::group(['prefix' => 'message', 'middleware' => 'auth:user'], function () {
+Route::group(['prefix' => 'message', 'middleware' => ['auth:user', 'scope:user']], function () {
     Route::get('/get', [MessageController::class, 'loadMessage']);
     Route::post('/send', [MessageController::class, 'sendMessage']);
 });

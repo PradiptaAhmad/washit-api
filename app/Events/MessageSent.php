@@ -30,22 +30,16 @@ class MessageSent implements ShouldBroadcast
      */
     public function broadcastOn(): Channel
     {
-        if($this->message->from_user_id == 'admin') {
-            return new Channel('chat.'.$this->message->to_user_id);
-        } else {
-            return new Channel('chat.'.$this->message->from_user_id);
-        }
-
+        return new Channel('chat.' . $this->message->from_user_id);
     }
 
     public function broadcastWith(): array
     {
-        return [
-            'id' => $this->message->id,
-            'message' => $this->message,
-            'from_user_id' => $this->message->from_user_id,
-            'to_user_id' => $this->message->to_user_id,
-            'created_at' => $this->message->updated_at,
-        ];
+        return $this->message->toArray();
+    }
+
+    public function broadcastAs(): string
+    {
+        return 'MessageSent';
     }
 }

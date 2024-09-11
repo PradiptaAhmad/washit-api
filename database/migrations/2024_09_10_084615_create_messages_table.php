@@ -16,6 +16,8 @@ return new class extends Migration
             $table->text('message')->nullable();
             $table->string('from_user_id')->nullable();
             $table->string('to_user_id')->nullable();
+            $table->string('attachment')->nullable();
+            $table->text('reply_to')->nullable();
             $table->timestamps();
         });
     }
