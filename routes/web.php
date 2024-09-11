@@ -28,3 +28,7 @@ Route::get('/image/{filename}', function ($filename) {
 
     return $response;
 });
+
+Route::get('/test', function () {
+    broadcast(new \App\Events\NewMessage('hello'));
+});

@@ -11,6 +11,7 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\LaundryController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\BannedUserController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderStatusController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderChartController;
@@ -225,6 +226,11 @@ Route::group(['prefix' => 'charts', 'middleware' => ['auth:admin', 'scope:admin'
         Route::get('/weekly', [TransactionChartController::class, 'getWeeklyChart']);
         Route::get('/monthly', [TransactionChartController::class, 'getMonthlyChart']);
     });
+});
+
+Route::group(['prefix' => 'message', 'middleware' => 'auth:user'], function () {
+    Route::get('/get', [MessageController::class, 'loadMessage']);
+    Route::post('/send', [MessageController::class, 'sendMessage']);
 });
 Route::group(['prefix' => 'transaction', 'middleware' => ['auth:user', 'scope:user']], function () {
     Route::get('/get', [TransactionController::class, 'getTransaction']);

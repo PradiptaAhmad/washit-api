@@ -24,6 +24,7 @@
     "laravel/sanctum": "^4.0",
     "laravel/socialite": "^5.15",
     "laravel/tinker": "^2.9",
+    "pusher/pusher-php-server": "^7.2",
     "xendit/xendit-php": "5.0.0"
   },
   "require-dev": {
