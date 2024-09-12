@@ -53,7 +53,7 @@ class MessageController extends Controller
             ]);
             $message = Message::create([
                 'id' => Str::uuid(),
-                'message' => $request->message . ':' . $request->order_id,
+                'message' => $request->message,
                 'from_user_id' => 'admin',
                 'to_user_id' => $request->user_id
             ]);
@@ -61,7 +61,7 @@ class MessageController extends Controller
         } else {
             $message = Message::create([
                 'id' => Str::uuid(),
-                'message' => $request->message . ':' . $request->order_id,
+                'message' => $request->message,
                 'from_user_id' => $user->id,
                 'to_user_id' => 'admin'
             ]);
