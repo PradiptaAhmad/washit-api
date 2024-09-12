@@ -65,7 +65,6 @@ class MessageController extends Controller
                 'from_user_id' => $user->id,
                 'to_user_id' => 'admin'
             ]);
-
             broadcast(new MessageSentAdmin($message));
         }
         return response([
