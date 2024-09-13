@@ -21,16 +21,16 @@ class MessageController extends Controller
         if ($request->user()->tokenCan('admin')) {
             if (isset($request->after)) {
                 $message = Message::where('id', $request->after)->first();
-                $messages = Message::where('to_user_id', $request->user_id)->where('created_at', '<', $message->created_at)->orderBy('created_at', 'asc')->limit(20)->get();
+                $messages = Message::where('to_user_id', $request->user_id)->where('created_at', '<', $message->created_at)->orderBy('created_at', 'desc')->limit(20)->get();
             } else {
-                $messages = Message::where('to_user_id', $request->user_id)->orderBy('created_at', 'asc')->paginate(20);
+                $messages = Message::where('to_user_id', $request->user_id)->orderBy('created_at', 'desc')->paginate(20);
             }
         } else {
             if (isset($request->after)) {
                 $message = Message::where('id', $request->after)->first();
-                $messages = Message::where('from_user_id', $user->id)->where('created_at', '<', $message->created_at)->orderBy('created_at', 'asc')->limit(20)->get();
+                $messages = Message::where('from_user_id', $user->id)->where('created_at', '<', $message->created_at)->orderBy('created_at', 'desc')->limit(20)->get();
             } else {
-                $messages = Message::where('from_user_id', $user->id)->orderBy('created_at', 'asc')->paginate(20);
+                $messages = Message::where('from_user_id', $user->id)->orderBy('created_at', 'desc')->paginate(20);
             }
         }
         return response([
