@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Message;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -17,9 +18,10 @@ class MessageAdminAll
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public $message;
+    public function __construct(Message $message)
     {
-        //
+        $this->message = $message;
     }
 
     /**
@@ -27,10 +29,18 @@ class MessageAdminAll
      *
      * @return array<int, \Illuminate\Broadcasting\Channel>
      */
-    public function broadcastOn(): array
+    public function broadcastOn()
     {
-        return [
-            new PrivateChannel('channel-name'),
-        ];
+        return   new Channel('chat.admin.all');
+    }
+
+    public function broadcastAs(): string
+    {
+        return 'MessageAdminAll';
+    }
+
+    public function broadcastWith(): array
+    {
+        return $this->message->toArray();
     }
 }

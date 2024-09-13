@@ -31,6 +31,7 @@ class MessageSentAdmin implements ShouldBroadcast
      */
     public function broadcastOn(): Channel
     {
+        broadcast(new MessageAdminAll($this->message));
         return new Channel('chat.admin.'.$this->message->from_user_id);
     }
 
