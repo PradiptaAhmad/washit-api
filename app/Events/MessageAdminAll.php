@@ -5,12 +5,13 @@ namespace App\Events;
 use App\Models\Message;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MessageSent implements ShouldBroadcast
+class MessageAdminAll
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -28,19 +29,18 @@ class MessageSent implements ShouldBroadcast
      *
      * @return array<int, \Illuminate\Broadcasting\Channel>
      */
-    public function broadcastOn(): Channel
+    public function broadcastOn()
     {
-        broadcast(new MessageAdminAll($this->message));
-        return new Channel('chat.' . $this->message->to_user_id);
+        return   new Channel('chat.admin.all');
+    }
+
+    public function broadcastAs(): string
+    {
+        return 'MessageAdminAll';
     }
 
     public function broadcastWith(): array
     {
         return $this->message->toArray();
-    }
-
-    public function broadcastAs(): string
-    {
-        return 'MessageSent';
     }
 }
