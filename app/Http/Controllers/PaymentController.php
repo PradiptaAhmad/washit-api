@@ -31,6 +31,12 @@ class PaymentController extends Controller
         $external_id = (string) date('YmdHis');
         $description = $order->laundry_service . ' ' . $user->username;
 
+        if ($order->metode_pembayaran == 'tunai') {
+            return response([
+                'status' => 'failed',
+                'message' => 'Payment not available for cash payment',
+            ], 400);
+        }
         if ($order->total_harga == null) {
             return response([
                 'status' => 'failed',

@@ -34,14 +34,14 @@ class OrderStatusService
 
     public function updateStatus($id) {
         $order = Order::where('id', $id)->first();
-        $orderStatus = OrderStatus::where('order_id', $id)->latest()->first();
+        $orderStatusTable = OrderStatus::where('order_id', $id)->latest()->first();
 
-        if ($orderStatus == null) {
+        if ($orderStatusTable == null) {
             $this->createOrderStatus($id, 'pending', '1', 'Pesanan Telah Dibuat');
             $this->firebaseService->sendNotification($order->user->notification_token, 'Pesanan Telah Dibuat', 'Pesananmu dengan nomor ' . $order->no_pemesanan . ' Menunggu Konfirmasi', '', ['route' => '/transaction-page', 'data' => $order->id]);
             return;
         }
-        $orderStatus = $orderStatus->status_code;
+        $orderStatus = $orderStatusTable->status_code;
         if ($orderStatus == 1) {
             if($order->jenis_pemesanan == 'antar_jemput')
             {
@@ -86,11 +86,16 @@ class OrderStatusService
             if ($order->jenis_pemesanan == 'antar_jemput') {
                 $this->createOrderStatus($id, 'success', '3', 'Pesanan selesai diproses');
                 sleep(2);
-                $this->firebaseService->sendNotification($order->user->notification_token, 'Pesananmu sudah selesai diproses', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Selesai Diproses, Menunggu Pembayaran', '', ['route' => '/transaction-page', 'data' => $order->id]);
 
                 if ($order->metode_pembayaran == 'non_tunai') {
-                    $this->createOrderStatus($id, 'pending', '4', 'Menunggu Pembayaran');
-                    $this->firebaseService->sendNotification($order->user->notification_token, 'Menunggu Pembayaran', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Selesai Diproses, Menunggu Pembayaran', '', ['route' => '/transaction-page', 'data' => $order->id]);
+                    if($this->checkPayment($id)) {
+                        $this->createOrderStatus($id, 'pending', '4', 'Pesananmu akan segera diantar');
+                        $this->firebaseService->sendNotification($order->user->notification_token, 'Pesanan Akan Segera Diantar', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Selesai Diproses, Menunggu Pembayaran', '', ['route' => '/transaction-page', 'data' => $order->id]);
+                    } else {
+                        OrderStatus::where('order_id', $id)->latest()->first()->delete();
+                        $this->createOrderStatus($id, 'pending', '3', 'Menunggu Pembayaran');
+                        $this->firebaseService->sendNotification($order->user->notification_token, 'Pesananmu sudah selesai diproses', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Selesai Diproses, Menunggu Pembayaran', '', ['route' => '/transaction-page', 'data' => $order->id]);
+                    }
                     return;
                 }
                 if ($order->metode_pembayaran == 'tunai') {
@@ -103,10 +108,15 @@ class OrderStatusService
             if ($order->jenis_pemesanan == 'antar_mandiri') {
                 $this->createOrderStatus($id, 'success', '3', 'Pesanan selesai diproses');
                 sleep(2);
-                $this->firebaseService->sendNotification($order->user->notification_token, 'Pesananmu sudah selesai diproses', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Selesai Diproses', '', ['route' => '/transaction-page', 'data' => $order->id]);
                 if ($order->metode_pembayaran == 'non_tunai') {
-                    $this->createOrderStatus($id, 'pending', '4', 'Menunggu Pembayaran');
-                    $this->firebaseService->sendNotification($order->user->notification_token, 'Menunggu Pembayaran', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Selesai Diproses, Menunggu Pembayaran', '', ['route' => '/transaction-page', 'data' => $order->id]);
+                    if ($this->checkPayment($id)) {
+                        $this->createOrderStatus($id, 'pending', '4', 'Pesananmu bisa segera diambil');
+                        $this->firebaseService->sendNotification($order->user->notification_token, 'Pesanan Bisa Segera Diambil', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Selesai Diproses, Bisa Segera Diambil', '', ['route' => '/transaction-page', 'data' => $order->id]);
+                    } else {
+                        OrderStatus::where('order_id', $id)->latest()->first()->delete();
+                        $this->createOrderStatus($id, 'pending', '3', 'Menunggu Pembayaran');
+                        $this->firebaseService->sendNotification($order->user->notification_token, 'Pesananmu sudah selesai diproses', 'Pesananmu dengan nomor ' . $order->no_pemesanan . 'Selesai Diproses, Menunggu Pembayaran', '', ['route' => '/transaction-page', 'data' => $order->id]);
+                    }
                     return;
                 }
                 if ($order->metode_pembayaran == 'tunai') {
@@ -119,57 +129,25 @@ class OrderStatusService
         }
         if ($orderStatus == 4) {
             if ($order->jenis_pemesanan == 'antar_jemput') {
-                if ($order->metode_pembayaran == 'non_tunai') {
-                    if ($this->checkPayment($id) == false) {
-                        return;
-                    }
-                    $this->createOrderStatus($id, 'success', '4', 'Pembayaran Berhasil');
-                    sleep(2);
-                    $this->createOrderStatus($id, 'pending', '5', 'Pesananmu Sedang Diantar');
-                    $this->firebaseService->sendNotification($order->user->notification_token, 'Pembayaran berhasil', 'Pesananmu nomor ' . $order->no_pemesanan . ' akan segera diantar ', '', ['route' => '/transaction-page', 'data' => $order->id]);
-                    return;
-                }
-                if ($order->metode_pembayaran == 'tunai') {
-                    $this->createOrderStatus($id, 'success', '4', 'Pembayaran dilakukan secara tunai');
-                    sleep(2);
-                    $this->createOrderStatus($id, 'pending', '5', 'Pesananmu Sedang Diantar');
-                    $this->firebaseService->sendNotification($order->user->notification_token, 'Pesanan telah selesai', 'Pesananmu nomor ' . $order->no_pemesanan . ' bisa segera diantar ', '', ['route' => '/transaction-page', 'data' => $order->id]);
-                    return;
-                }
-            }
-            if ($order->jenis_pemesanan == 'antar_mandiri') {
-                if ($order->metode_pembayaran == 'non_tunai') {
-                    if ($this->checkPayment($id) == false) {
-                        return;
-                    }
-                    $this->createOrderStatus($id, 'success', '4', 'Pembayaran Berhasil');
-                    sleep(2);
-                    $this->createOrderStatus($id, 'pending', '5', 'Menunggu Pengambilan');
-                    $this->firebaseService->sendNotification($order->user->notification_token, 'Pembayaran berhasil', 'Pesananmu nomor ' . $order->no_pemesanan . ' bisa segera diambil ', '', ['route' => '/transaction-page', 'data' => $order->id]);
-                    return;
-                }
-                if ($order->metode_pembayaran == 'tunai') {
-                    $this->createOrderStatus($id, 'success', '4', 'Pembayaran dilakukan secara tunai');
-                    sleep(2);
-                    $this->createOrderStatus($id, 'pending', '5', 'Menunggu Pengambilan');
-                    $this->firebaseService->sendNotification($order->user->notification_token, 'Pesanan telah selesai dan bisa diambil', 'Pesananmu nomor ' . $order->no_pemesanan . ' bisa segera diambil ', '', ['route' => '/transaction-page', 'data' => $order->id]);
-                    return;
-                }
-            }
-        }
-        if ($orderStatus == 5) {
-            if ($order->jenis_pemesanan == 'antar_jemput') {
+                $this->createOrderStatus($id, 'success', '4', 'Pesanan Selesai Diantar');
+                sleep(2);
                 $this->createOrderStatus($id, 'success', '5', 'Pesanan telah diantar');
-                $this->createTransaction($id);
-                $order->status = 'completed';
-                $order->save();
-                $this->firebaseService->sendNotification($order->user->notification_token, 'Laundrymu sudah sampai', 'Pesananmu nomor ' . $order->no_pemesanan . ' sudah diantar ke alamat ', '', ['route' => '/transaction-page', 'data' => $order->id]);
+                $this->firebaseService->sendNotification($order->user->notification_token, 'Pesanan Telah Diantar', 'Pesananmu nomor ' . $order->no_pemesanan . ' Sudah diantar ', '', ['route' => '/transaction-page', 'data' => $order->id]);
+                if ($order->metode_pembayaran == "tunai") {
+                    $this->createTransaction($id);
+                }
                 return;
             }
             if ($order->jenis_pemesanan == 'antar_mandiri') {
-                $this->createOrderStatus($id, 'success', '5', 'Pesanan telah selesai');
-                $this->createTransaction($id);
-                $this->firebaseService->sendNotification($order->user->notification_token, 'Laundrymu sudah selesai', 'Pesananmu nomor ' . $order->no_pemesanan . ' sudah diantar ke alamat ', '', ['route' => '/transaction-page', 'data' => $order->id]);
+                $this->createOrderStatus($id, 'success', '4', 'Pesanan Telah Diambil');
+                sleep(2);
+                $this->createOrderStatus($id, 'success', '5', 'Pesanan Telah Selesai');
+                $this->firebaseService->sendNotification($order->user->notification_token, 'Pesanan Telah Selesai', 'Pesananmu nomor ' . $order->no_pemesanan . ' Sudah selesai ', '', ['route' => '/transaction-page', 'data' => $order->id]);
+                $order->status = 'completed';
+                $order->save();
+                if($order->metode_pembayaran == "tunai") {
+                    $this->createTransaction($id);
+                }
                 return;
             }
         }
