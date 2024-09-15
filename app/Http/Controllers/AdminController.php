@@ -84,10 +84,24 @@ class AdminController extends Controller
         ], 200);
     }
 
-    public function getUser()
+    public function getUser(Request $request)
     {
-        $user = User::all();
-        return response(['status' => 'success',
+        $request->validate([
+            'chat' => 'nullable|boolean',
+        ]);
+        if ($request->query('chat') == true) {
+            $user = collect();
+            $users = User::all();
+            foreach ($users as $user) {
+                $latestChat = $user->latestChat();
+                $u = array_merge($user->toArray(), ["message" => $latestChat]);
+                $user = $u;
+            }
+        } else {
+            $user = User::all();
+        }
+        return response([
+            'status' => 'success',
             'message' => 'User fetched successfully',
             'user' => $user,
         ], 200);
