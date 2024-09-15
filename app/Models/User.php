@@ -51,4 +51,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function latestChat()
+    {
+        return Message::where('from_user_id', $this->id)
+            ->orWhere('to_user_id', $this->id)
+            ->latest()
+            ->first();
+    }
 }
